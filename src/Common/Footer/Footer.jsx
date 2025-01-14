@@ -1,6 +1,6 @@
+
 import { Button, Typography } from "@material-tailwind/react";
-import "aos/dist/aos.css";
-import React from "react";
+
 import {
   FaFacebookF,
   FaInstagram,
@@ -11,8 +11,8 @@ import {
 const Footer = () => {
   return (
     <footer className="bg-gray-800 dark:bg-gray-900 text-gray-200 py-10">
-      <div className="container mx-auto px-4">
-        <div className="text-center mb-8" data-aos="fade-up">
+      <div className="w-11/12 mx-auto px-4">
+        <div className="text-center mb-8">
           <Typography variant="h5" className="font-bold mb-4">
             Pet Adoption
           </Typography>
@@ -48,7 +48,7 @@ const Footer = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-          <div className="text-center" data-aos="fade-up">
+          <div className="text-center">
             <Typography className="font-semibold mb-2">Quick Links</Typography>
             <ul className="space-y-2">
               <li>
@@ -73,7 +73,7 @@ const Footer = () => {
               </li>
             </ul>
           </div>
-          <div className="text-center" data-aos="fade-up" data-aos-delay="200">
+          <div className="text-center">
             <Typography className="font-semibold mb-2">Support</Typography>
             <ul className="space-y-2">
               <li>
@@ -93,7 +93,7 @@ const Footer = () => {
               </li>
             </ul>
           </div>
-          <div className="text-center" data-aos="fade-up" data-aos-delay="400">
+          <div className="text-center">
             <Typography className="font-semibold mb-2">Newsletter</Typography>
             <Typography className="mb-4">
               Stay updated with the latest news and adoption stories.
@@ -109,7 +109,7 @@ const Footer = () => {
           </div>
         </div>
 
-        <div className="text-center" data-aos="fade-up" data-aos-delay="600">
+        <div className="text-center">
           <Typography className="text-sm">
             &copy; {new Date().getFullYear()} Pet Adoption. All rights reserved.
           </Typography>
@@ -120,3 +120,4 @@ const Footer = () => {
 };
 
 export default Footer;
+

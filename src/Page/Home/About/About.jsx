@@ -1,8 +1,9 @@
-import React, { useEffect } from "react";
+/* eslint-disable react/no-unescaped-entities */
 import { Typography } from "@material-tailwind/react";
-import { motion } from "framer-motion";
 import AOS from "aos";
 import "aos/dist/aos.css";
+import { motion } from "framer-motion";
+import { useEffect } from "react";
 
 const About = () => {
   useEffect(() => {
@@ -11,7 +12,7 @@ const About = () => {
 
   return (
     <section className="py-16 bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-200">
-      <div className="container mx-auto px-4">
+      <div className="w-11/12 mx-auto px-4">
         {/* Heading */}
         <motion.div
           initial={{ opacity: 0, y: -50 }}
@@ -41,7 +42,7 @@ const About = () => {
             <img
               src="https://i.ibb.co.com/kmQMJfX/nathan-hanna-7hx-C83-Qcuwo-unsplash.jpg"
               alt="Helping Pets"
-              className="rounded-lg shadow-lg"
+              className="rounded-lg shadow-lg h-96"
               data-aos="fade-right"
             />
           </motion.div>

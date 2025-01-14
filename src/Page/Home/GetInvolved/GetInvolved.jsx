@@ -1,8 +1,8 @@
-import React, { useEffect } from "react";
 import { Button, Typography } from "@material-tailwind/react";
-import { motion } from "framer-motion";
 import AOS from "aos";
-import "aos/dist/aos.css";  // Don't forget to import the AOS CSS file
+import "aos/dist/aos.css";
+import { motion } from "framer-motion";
+import { useEffect } from "react";
 
 const GetInvolved = () => {
   useEffect(() => {
@@ -11,7 +11,7 @@ const GetInvolved = () => {
 
   return (
     <section className="py-16 bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200">
-      <div className="container mx-auto px-4 text-center">
+      <div className="w-11/12 mx-auto px-4 text-center">
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           whileInView={{ opacity: 1, scale: 1 }}
@@ -38,8 +38,8 @@ const GetInvolved = () => {
               Donate
             </Typography>
             <Typography className="mt-2 text-gray-600 dark:text-gray-300">
-              Your donations help us provide food, shelter, and medical care
-              for rescued pets.
+              Your donations help us provide food, shelter, and medical care for
+              rescued pets.
             </Typography>
             <Button color="blue" size="lg" className="mt-4">
               Donate Now

@@ -1,8 +1,9 @@
+/* eslint-disable react/no-unescaped-entities */
 import { Button, Typography } from "@material-tailwind/react";
 import AOS from "aos";
 import "aos/dist/aos.css";
 import { motion } from "framer-motion";
-import  { useEffect } from "react";
+import { useEffect } from "react";
 
 const CallToAction = () => {
   useEffect(() => {
@@ -10,8 +11,8 @@ const CallToAction = () => {
   }, []);
 
   return (
-    <section className="relative py-20 ">
-      <div className="container mx-auto px-4 flex flex-col lg:flex-row items-center justify-between space-y-8 gap-8 lg:space-y-0">
+    <section className="relative py-20 dark:bg-[#303030]">
+      <div className="w-11/12 mx-auto px-4 flex flex-col lg:flex-row items-center justify-between space-y-8 gap-8 lg:space-y-0">
         {/* Inspirational Image */}
         <motion.div
           initial={{ x: -50, opacity: 0 }}
@@ -23,7 +24,7 @@ const CallToAction = () => {
           <img
             src="https://i.ibb.co.com/qBw3xG8/petindenger1.jpg"
             alt="Adopt a Pet"
-            className="rounded-lg shadow-lg"
+            className="rounded-lg shadow-lg h-96"
             data-aos="fade-right"
           />
         </motion.div>
@@ -38,14 +39,14 @@ const CallToAction = () => {
         >
           <Typography
             variant="h2"
-            className="text-3xl lg:text-4xl font-bold"
+            className="text-3xl lg:text-4xl font-bold dark:text-white"
             data-aos="fade-up"
           >
             Adopt, Don't Shop!
           </Typography>
           <Typography
             variant="lead"
-            className="text-lg lg:text-xl"
+            className="text-lg lg:text-xl dark:text-white"
             data-aos="fade-up"
             data-aos-delay="200"
           >
