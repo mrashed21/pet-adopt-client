@@ -7,7 +7,7 @@ import Navbar from "../Common/Navbar/Navbar";
 const MainLayOut = () => {
   return (
     <>
-    <div className=" bg-gray-400 min-h-screen">
+    <div className=" bg-gray-400">
       <HelmetProvider>
       <header className="sticky top-0 left-0 right-0 z-50">
         <div className="max-w-screen-2xl mx-auto">
