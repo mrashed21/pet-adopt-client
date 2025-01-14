@@ -2,7 +2,7 @@ import { Button, Typography } from "@material-tailwind/react";
 import AOS from "aos";
 import "aos/dist/aos.css";
 import { motion } from "framer-motion";
-import React, { useEffect } from "react";
+import  { useEffect } from "react";
 
 const CallToAction = () => {
   useEffect(() => {
