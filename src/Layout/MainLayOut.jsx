@@ -1,10 +1,13 @@
 import { Outlet } from "react-router-dom";
 import Footer from "../Common/Footer/Footer";
 import Navbar from "../Common/Navbar/Navbar";
+import { HelmetProvider } from "react-helmet-async";
+import { ToastContainer } from "react-toastify";
 
 const MainLayOut = () => {
   return (
     <>
+     <HelmetProvider>
       <section>
         <Navbar />
       </section>
@@ -14,6 +17,8 @@ const MainLayOut = () => {
       <section>
         <Footer />
       </section>
+      <ToastContainer />
+      </HelmetProvider>
     </>
   );
 };

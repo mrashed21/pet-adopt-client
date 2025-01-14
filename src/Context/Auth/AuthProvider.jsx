@@ -12,7 +12,7 @@ import {
   
   import axios from "axios";
   import { createContext, useEffect, useState } from "react";
-//   import { toast } from "react-toastify";
+  import { toast } from "react-toastify";
 import { auth } from "../../Firebase/firebase.config";
 //   import { auth } from "../firebase/firebase.config";
   
@@ -77,7 +77,7 @@ import { auth } from "../../Firebase/firebase.config";
     // Logout
     const logOut = () => {
       return signOut(auth).then(() => {
-        // toast.success("Logout Successfully");
+        toast.success("Logout Successfully");
       });
     };
   
