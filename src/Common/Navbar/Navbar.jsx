@@ -470,7 +470,7 @@ const Navbar = () => {
 
   return (
     <nav className="bg-white dark:bg-gray-900 shadow-lg py-2">
-      <div className="px-4 lg:w-11/12 mx-auto flex justify-between items-center py-1">
+      <div className="px-4 container mx-auto flex justify-between items-center py-1">
         {/* Logo */}
         <NavLink to="/" className="flex items-center space-x-2">
           <img

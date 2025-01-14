@@ -3,7 +3,7 @@ import "react-responsive-carousel/lib/styles/carousel.min.css"; // requires a lo
 
 const Banner = () => {
   return (
-    <>
+    <div className="container mx-auto">
       <Carousel>
         <div className="w-full h-[550px]">
           <img
@@ -54,7 +54,7 @@ const Banner = () => {
           />
         </div>
       </Carousel>
-    </>
+    </div>
   );
 };
 
