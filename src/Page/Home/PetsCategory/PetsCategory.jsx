@@ -1,16 +1,16 @@
-import React, { useEffect } from "react";
 import { Card, CardBody, Typography } from "@material-tailwind/react";
-import { motion } from "framer-motion";
 import AOS from "aos";
 import "aos/dist/aos.css";
+import { motion } from "framer-motion";
+import { useEffect } from "react";
 
 const categories = [
-  { name: "Cats", img: "https://via.placeholder.com/150?text=Cats" },
-  { name: "Dogs", img: "https://via.placeholder.com/150?text=Dogs" },
-  { name: "Rabbits", img: "https://via.placeholder.com/150?text=Rabbits" },
-  { name: "Fish", img: "https://via.placeholder.com/150?text=Fish" },
-  { name: "Birds", img: "https://via.placeholder.com/150?text=Birds" },
-  { name: "Reptiles", img: "https://via.placeholder.com/150?text=Reptiles" },
+  { name: "Cats", img: "https://i.ibb.co.com/NZk0ctZ/cat.jpg" },
+  { name: "Dogs", img: "https://i.ibb.co.com/5MpR4X2/dog.jpg" },
+  { name: "Rabbits", img: "https://i.ibb.co.com/GsT0KJK/Rabbits.jpg" },
+  { name: "Fish", img: "https://i.ibb.co.com/zVz9MJT/fish.jpg" },
+  { name: "Birds", img: "https://i.ibb.co.com/hRHk4CZ/Birds.jpg" },
+  { name: "Reptiles", img: "https://i.ibb.co.com/LvtFrYF/Reptiles.jpg" },
 ];
 
 const animationVariants = {
@@ -55,14 +55,14 @@ const PetsCategory = () => {
               transition={{ duration: 0.3 }}
             >
               <Card
-                className="hover:shadow-lg transition-shadow duration-300"
+                className="hover:shadow-lg transition-shadow duration-300 "
                 data-aos="zoom-in"
               >
-                <CardBody className="flex flex-col items-center text-center">
+                <CardBody className="flex flex-col items-center text-center p-3">
                   <img
                     src={category.img}
                     alt={category.name}
-                    className="w-full h-32 object-cover rounded-lg mb-4"
+                    className="w-full h-40 object-cover rounded-lg mb-4"
                   />
                   <Typography
                     variant="h5"
