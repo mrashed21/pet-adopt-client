@@ -1,221 +1,181 @@
-// import {
-//   Button,
-//   Card,
-//   CardBody,
-//   Input,
-//   Option,
-//   Select,
-//   Typography,
-// } from "@material-tailwind/react";
 // import { useInfiniteQuery } from "@tanstack/react-query";
 // import axios from "axios";
-// import React, { useState } from "react";
+// import { useState } from "react";
 // import { useInView } from "react-intersection-observer";
 
-// const fetchPets = async ({ pageParam = 1, queryKey }) => {
-//   const [_, filters] = queryKey;
-//   const { search, category } = filters;
-//   const response = await axios.get("/services", {
-//     params: {
-//       page: pageParam,
-//       search,
-//       category,
-//     },
-//   });
-//   return response.data;
-// };
-
 // const PetListing = () => {
-//   const [search, setSearch] = useState("");
-//   const [category, setCategory] = useState("");
+//   const [searchName, setSearchName] = useState("");
+//   const [selectedCategory, setSelectedCategory] = useState("");
 
-//   const { ref, inView } = useInView();
+//   // Fetch function for pets
+//   const fetchPets = async ({ pageParam = 1 }) => {
+//     const { data } = await axios.get("http://localhost:5000/pets", {
+//       params: {
+//         page: pageParam,
+//         limit: 6,
+//         name: searchName,
+//         category: selectedCategory,
+//       },
+//     });
+//     return data;
+//   };
+
+//   // Infinite Query with the correct v5 syntax
 //   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
-//     useInfiniteQuery(["pets", { search, category }], fetchPets, {
-//       getNextPageParam: (lastPage) => lastPage.nextPage,
+//     useInfiniteQuery({
+//       queryKey: ["pets", { searchName, selectedCategory }],
+//       queryFn: fetchPets,
+//       getNextPageParam: (lastPage, pages) => {
+//         if (pages.length < lastPage.totalPages) {
+//           return pages.length + 1; // Next page number
+//         }
+//         return undefined;
+//       },
 //     });
 
-//   React.useEffect(() => {
-//     if (inView && hasNextPage) {
-//       fetchNextPage();
-//     }
-//   }, [inView, hasNextPage]);
+//   const { ref } = useInView({
+//     onChange: (inView) => {
+//       if (inView && hasNextPage) {
+//         fetchNextPage();
+//       }
+//     },
+//   });
+
+//   const categories = ["Dog", "Cat", "Bird", "Rabbit", "Other"];
 
 //   return (
-//     <section className="py-16 bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200">
-//       <div className="w-11/12 mx-auto px-4">
-//         <div className="flex flex-col md:flex-row gap-4 mb-8">
-//           <Input
-//             label="Search by Name"
-//             value={search}
-//             onChange={(e) => setSearch(e.target.value)}
-//             className="flex-grow"
-//           />
-//           <Select
-//             label="Filter by Category"
-//             value={category}
-//             onChange={(value) => setCategory(value)}
-//           >
-//             <Option value="">All</Option>
-//             <Option value="Cats">Cats</Option>
-//             <Option value="Dogs">Dogs</Option>
-//             <Option value="Rabbit">Rabbit</Option>
-//             <Option value="Fish">Fish</Option>
-//           </Select>
-//         </div>
-
-//         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-//           {data?.pages.map((page) =>
-//             page.pets.map((pet) => (
-//               <Card key={pet.id} className="shadow-lg">
-//                 <img
-//                   src={pet.image}
-//                   alt={pet.name}
-//                   className="w-full h-48 object-cover rounded-t-lg"
-//                 />
-//                 <CardBody>
-//                   <Typography variant="h5" className="font-bold">
-//                     {pet.name}
-//                   </Typography>
-//                   <Typography className="mt-2">Age: {pet.age} years</Typography>
-//                   <Typography className="mt-1 text-gray-600 dark:text-gray-400">
-//                     Location: {pet.location}
-//                   </Typography>
-//                   <Button color="blue" className="mt-4">
-//                     View Details
-//                   </Button>
-//                 </CardBody>
-//               </Card>
-//             ))
-//           )}
-//         </div>
-
-//         {isFetchingNextPage && (
-//           <div className="text-center mt-6">
-//             <Typography>Loading more pets...</Typography>
-//           </div>
-//         )}
-//         <div ref={ref}></div>
+//     <div className="container mx-auto p-4">
+//       {/* Filters */}
+//       <div className="flex items-center gap-4 mb-6">
+//         <input
+//           type="text"
+//           placeholder="Search by name"
+//           value={searchName}
+//           onChange={(e) => setSearchName(e.target.value)}
+//           className="border p-2 rounded w-1/3"
+//         />
+//         <select
+//           value={selectedCategory}
+//           onChange={(e) => setSelectedCategory(e.target.value)}
+//           className="border p-2 rounded"
+//         >
+//           <option value="">All Categories</option>
+//           {categories.map((cat) => (
+//             <option key={cat} value={cat.toLowerCase()}>
+//               {cat}
+//             </option>
+//           ))}
+//         </select>
 //       </div>
-//     </section>
+
+//       {/* Pet Cards */}
+//       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+//         {data?.pages.map((page) =>
+//           page.pets.map((pet) => (
+//             <div key={pet._id} className="border rounded shadow p-4">
+//               <img
+//                 src={pet.imageUrl}
+//                 alt={pet.name}
+//                 className="w-full h-48 object-cover rounded"
+//               />
+//               <h2 className="text-xl font-bold mt-2">{pet.name}</h2>
+//               <p>Age: {pet.age}</p>
+//               <p>Location: {pet.location}</p>
+//               <button className="mt-4 bg-blue-500 text-white px-4 py-2 rounded">
+//                 View Details
+//               </button>
+//             </div>
+//           ))
+//         )}
+//       </div>
+
+//       {/* Loader for Infinite Scroll */}
+//       <div ref={ref} className="text-center py-4">
+//         {isFetchingNextPage && <p>Loading more pets...</p>}
+//         {!hasNextPage && <p>No more pets to show</p>}
+//       </div>
+//     </div>
 //   );
 // };
 
-// export default PetListing;
-
-import {
-  Button,
-  Card,
-  CardBody,
-  Input,
-  Option,
-  Select,
-  Typography,
-} from "@material-tailwind/react";
+// export default PetListing;import React, { useState } from "react";
 import { useInfiniteQuery } from "@tanstack/react-query";
-import axios from "axios";
-import { useState } from "react";
+import { useInView } from "react-intersection-observer";
 
-const fetchPets = async ({ pageParam = 1, queryKey }) => {
-  const [, filters] = queryKey;
-  const { search, category } = filters;
-  const response = await axios.get("/services", {
-    params: {
-      page: pageParam,
-      search,
-      category,
-    },
-  });
-  return response.data;
-};
+import { useEffect, useState } from "react";
+import PetCard from "../PetCard/PetCard";
 
 const PetListing = () => {
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("");
+  const { ref, inView } = useInView();
 
-  const {
-    data,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
-    isError,
-    error,
-  } = useInfiniteQuery({
-    queryKey: ["pets", { search, category }],
-    queryFn: fetchPets,
-    getNextPageParam: (lastPage) => lastPage.nextPage,
-  });
-
-  if (isError) {
-    return (
-      <div className="text-center mt-6">
-        <Typography color="red">Error: {error.message}</Typography>
-      </div>
+  const fetchPets = async ({ pageParam = 1 }) => {
+    const response = await fetch(
+      `http://localhost:5000/pets?name=${search}&category=${category}&page=${pageParam}&limit=9`
     );
-  }
+    return response.json();
+  };
+
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
+    useInfiniteQuery({
+      queryKey: ["pets", { search, category }],
+      queryFn: fetchPets,
+      getNextPageParam: (lastPage, allPages) => {
+        const currentCount = allPages.flatMap((page) => page.pets).length;
+        return currentCount < lastPage.totalCount
+          ? allPages.length + 1
+          : undefined;
+      },
+    });
+
+  useEffect(() => {
+    if (inView && hasNextPage) fetchNextPage();
+  }, [inView, hasNextPage, fetchNextPage]);
 
   return (
-    <section className="py-16 bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200">
-      <div className="w-11/12 mx-auto px-4">
-        <div className="flex flex-col md:flex-row gap-4 mb-8">
-          <Input
-            label="Search by Name"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="flex-grow"
-          />
-          <Select
-            label="Filter by Category"
-            value={category}
-            onChange={(e) => setCategory(e)}
-          >
-            <Option value="">All</Option>
-            <Option value="Cats">Cats</Option>
-            <Option value="Dogs">Dogs</Option>
-            <Option value="Rabbit">Rabbit</Option>
-            <Option value="Fish">Fish</Option>
-          </Select>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {data?.pages.map((page) =>
-            page.pets.map((pet) => (
-              <Card key={pet.id} className="shadow-lg">
-                <img
-                  src={pet.image}
-                  alt={pet.name}
-                  className="w-full h-48 object-cover rounded-t-lg"
-                />
-                <CardBody>
-                  <Typography variant="h5" className="font-bold">
-                    {pet.name}
-                  </Typography>
-                  <Typography className="mt-2">Age: {pet.age} years</Typography>
-                  <Typography className="mt-1 text-gray-600 dark:text-gray-400">
-                    Location: {pet.location}
-                  </Typography>
-                  <Button color="blue" className="mt-4">
-                    View Details
-                  </Button>
-                </CardBody>
-              </Card>
-            ))
-          )}
-        </div>
-
-        {hasNextPage && (
-          <div className="text-center mt-6">
-            <Button
-              onClick={() => fetchNextPage()}
-              disabled={isFetchingNextPage}
-              color="blue"
-            >
-              {isFetchingNextPage ? "Loading..." : "Load More"}
-            </Button>
-          </div>
+    <div className="p-4">
+      <div className="flex gap-4 mb-4">
+        <input
+          type="text"
+          placeholder="Search by name"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="border p-2 rounded"
+        />
+        <select
+          value={category}
+          onChange={(e) => setCategory(e.target.value)}
+          className="border p-2 rounded"
+        >
+          {/* 
+          { value: "dog", label: "Dog" },
+    { value: "cat", label: "Cat" },
+    { value: "bird", label: "Bird" },
+    { value: "rabbit", label: "Rabbit" },
+    { value: "other", label: "Other" },
+      */}
+          <option value="">All Categories</option>
+          <option value="cat">Cat</option>
+          <option value="dog">Dog</option>
+          <option value="bird">Bird</option>
+          <option value="rabbit">Rabbit</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        {data?.pages.flatMap((page) =>
+          page.pets.map((pet) => <PetCard key={pet._id} pet={pet} />)
         )}
       </div>
-    </section>
+      <div ref={ref} className="h-10 flex justify-center items-center">
+        {isFetchingNextPage
+          ? "Loading more pets..."
+          : hasNextPage
+          ? "Scroll to load more"
+          : "No more pets"}
+      </div>
+    </div>
   );
 };
 

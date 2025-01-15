@@ -33,6 +33,7 @@
     "react-select": "^5.9.0",
     "react-toastify": "^11.0.2",
     "sort-by": "^1.2.0",
+    "use-debounce": "^10.0.4",
     "yup": "^1.6.1"
   },
   "devDependencies": {
