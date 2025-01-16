@@ -16,8 +16,8 @@ const Dashboard = () => {
          <NavLink to="/">Home</NavLink>
           <NavLink to="dashboard/add-pet">My added pets
           </NavLink>
-          <NavLink to="/">Adoption Request</NavLink>
-          <NavLink to="/">Create Donation Campaign
+          <NavLink to="dashboard/adopt-request">Adoption Request</NavLink>
+          <NavLink to="dashboard/add-donation">Create Donation Campaign
           </NavLink>
           <NavLink to="/">My Donation Campaigns
           </NavLink>
