@@ -12,22 +12,24 @@ const Dashboard = () => {
       {/* <UserDashboard/> */}
       <section className="flex w-11/12 mx-auto">
         <aside className="w-3/12">
-         <div className="flex flex-col gap-2">
-         <NavLink to="/">Home</NavLink>
-          <NavLink to="dashboard/add-pet">My added pets
-          </NavLink>
-          <NavLink to="dashboard/adopt-request">Adoption Request</NavLink>
-          <NavLink to="dashboard/add-donation">Create Donation Campaign
-          </NavLink>
-          <NavLink to="/">My Donation Campaigns
-          </NavLink>
-          <NavLink to="/">My Donations</NavLink>
-         </div>
+          <div className="flex flex-col gap-2">
+            <NavLink to="/">Home</NavLink>
+            <NavLink to="/dashboard">Profile</NavLink>
+            <NavLink to="dashboard/add-pet">Add a Pet</NavLink>
+            <NavLink to="dashboard/my-added">My added pets
+            </NavLink>
+
+            <NavLink to="dashboard/adopt-request">Adoption Request</NavLink>
+            <NavLink to="dashboard/add-donation">
+              Create Donation Campaign
+            </NavLink>
+            <NavLink to="/">My Donation Campaigns</NavLink>
+            <NavLink to="/">My Donations</NavLink>
+          </div>
         </aside>
         <main className="w-9/12">
-          <Outlet/>
+          <Outlet />
         </main>
-        
       </section>
     </div>
   );

@@ -2,14 +2,17 @@ import { createBrowserRouter } from "react-router-dom";
 import Login from "../Components/Login/Login";
 import Register from "../Components/Register/Register";
 import AuthProvider from "../Context/Auth/AuthProvider";
+import AdoptRequest from "../Dashboard/AdoptRequest/AdoptRequest";
 import Dashboard from "../Dashboard/Dashboard";
 import MainLayOut from "../Layout/MainLayOut";
 import AddPetForm from "../Page/AddPetFrom/AddPetFrom";
 import AddDonation from "../Page/Donation/AddDonation/AddDonation";
 import Home from "../Page/Home/Home/Home";
+import MyAdded from "../Page/MyAdded/MyAdded";
 import PetListing from "../Page/PetListing/PetContainer/PetListing";
 import PetDetails from "../Page/PetListing/PetDetails/PetDetails";
-import AdoptRequest from "../Dashboard/AdoptRequest/AdoptRequest";
+import UserProfile from "../Page/UserProfile/UserProfile";
+import PrivateRoute from "./PrivateRoute";
 
 const Routes = createBrowserRouter([
   {
@@ -32,12 +35,20 @@ const Routes = createBrowserRouter([
   },
   {
     path: "/dashboard",
-    element: <Dashboard />,
+    element: (
+      <AuthProvider>
+        {" "}
+        <PrivateRoute>
+          <Dashboard />
+        </PrivateRoute>
+      </AuthProvider>
+    ),
     children: [
-      { path: "/dashboard", element: <h1>Dashboard</h1> },
+      { path: "/dashboard", element: <UserProfile /> },
       { path: "dashboard/add-pet", element: <AddPetForm /> },
+      { path: "dashboard/my-added", element: <MyAdded /> },
       { path: "dashboard/add-donation", element: <AddDonation /> },
-      { path: "dashboard/adopt-request", element: <AdoptRequest/> },
+      { path: "dashboard/adopt-request", element: <AdoptRequest /> },
     ],
   },
 ]);

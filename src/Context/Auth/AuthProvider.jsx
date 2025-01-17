@@ -161,7 +161,11 @@ const AuthProvider = ({ children }) => {
   const handleRegister = async (email, password, name, photoURL) => {
     setLoading(true);
     try {
-      const result = await createUserWithEmailAndPassword(auth, email, password);
+      const result = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
       await updateProfile(result.user, {
         displayName: name,
         photoURL: photoURL || "",
@@ -249,6 +253,25 @@ const AuthProvider = ({ children }) => {
       setLoading(false);
     }
   };
+  const UpdateProfile = async (name, photoURL) => {
+    try {
+      await updateProfile(auth.currentUser, {
+        displayName: name,
+        photoURL,
+      });
+      toast.success("Profile updated successfully!");
+
+      // Update local user state
+      setUser({
+        ...auth.currentUser,
+        displayName: name,
+        photoURL,
+      });
+    } catch (error) {
+      toast.error("Failed to update profile.");
+      throw error;
+    }
+  };
 
   // Monitor Auth State
   useEffect(() => {
@@ -287,6 +310,7 @@ const AuthProvider = ({ children }) => {
     setUser,
     loading,
     setLoading,
+    UpdateProfile,
   };
 
   return (
@@ -303,4 +327,3 @@ const AuthProvider = ({ children }) => {
 };
 
 export default AuthProvider;
-
