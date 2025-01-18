@@ -1,4 +1,5 @@
 import { Button, Card, Typography } from "@material-tailwind/react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   flexRender,
   getCoreRowModel,
@@ -6,35 +7,65 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import axios from "axios";
-import { useContext, useEffect, useMemo, useState } from "react";
+import { useContext, useMemo, useState } from "react";
+import { FaArrowDownLong, FaArrowUpLong } from "react-icons/fa6";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import { AuthContext } from "../../Context/Auth/AuthProvider";
+import useAxiosSecure from "../../Hooks/UseAxiosSecure/useAxiosSecure";
 
-const MyAddedPets = () => {
+const axiosSecure = useAxiosSecure();
+
+const TableSkeleton = () => (
+  <div className="animate-pulse">
+    <div className="h-12 bg-blue-gray-50 mb-4"></div>
+    {[...Array(5)].map((_, idx) => (
+      <div key={idx} className="h-20 bg-blue-gray-50/50 mb-2 rounded-md"></div>
+    ))}
+  </div>
+);
+
+const MyAdded = () => {
   const { user } = useContext(AuthContext);
-  const [pets, setPets] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [sorting, setSorting] = useState([]);
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
-  // Fetch Pets
-  useEffect(() => {
-    const fetchPets = async () => {
-      try {
-        const response = await axios.get(
-          `http://localhost:5000/pet/me/${user.email}`
-        );
-        setPets(response.data);
-        setLoading(false);
-      } catch (error) {
-        console.error("Error fetching pets:", error);
-        setLoading(false);
-      }
-    };
-    fetchPets();
-  }, [user.email]);
+  // Fetch Pets with Tanstack Query
+  const { data: pets = [], isLoading } = useQuery({
+    queryKey: ["pets", user?.email],
+    queryFn: async () => {
+      const response = await axiosSecure.get(`/pet/me/${user.email}`);
+      return response.data;
+    },
+  });
+
+  // Delete Mutation
+  const deleteMutation = useMutation({
+    mutationFn: (petId) => axiosSecure.delete(`/pets/${petId}`),
+    onSuccess: () => {
+      queryClient.invalidateQueries(["pets", user?.email]);
+      Swal.fire("Deleted!", "Your pet has been deleted.", "success");
+    },
+    onError: (error) => {
+      console.error("Error deleting pet:", error);
+      Swal.fire("Error!", "Failed to delete pet.", "error");
+    },
+  });
+
+  // Adopt Mutation
+  const adoptMutation = useMutation({
+    mutationFn: (petId) =>
+      axiosSecure.patch(`/pet/${petId}`, { adopted: true }),
+    onSuccess: () => {
+      queryClient.invalidateQueries(["pets", user?.email]);
+      Swal.fire("Success!", "Pet marked as adopted.", "success");
+    },
+    onError: (error) => {
+      console.error("Error marking pet as adopted:", error);
+      Swal.fire("Error!", "Failed to mark as adopted.", "error");
+    },
+  });
 
   // Handle Update
   const handleUpdate = (id) => {
@@ -42,7 +73,7 @@ const MyAddedPets = () => {
   };
 
   // Handle Delete with SweetAlert2
-  const handleDelete = async (petId) => {
+  const handleDelete = (petId) => {
     Swal.fire({
       title: "Are you sure?",
       text: "You won't be able to revert this!",
@@ -51,86 +82,89 @@ const MyAddedPets = () => {
       confirmButtonColor: "#3085d6",
       cancelButtonColor: "#d33",
       confirmButtonText: "Yes, delete it!",
-    }).then(async (result) => {
+    }).then((result) => {
       if (result.isConfirmed) {
-        try {
-          await axios.delete(`http://localhost:5000/pets/${petId}`);
-          setPets((prev) => prev.filter((pet) => pet._id !== petId));
-          Swal.fire("Deleted!", "Your pet has been deleted.", "success");
-        } catch (error) {
-          console.error("Error deleting pet:", error);
-          Swal.fire("Error!", "Failed to delete pet.", "error");
-        }
+        deleteMutation.mutate(petId);
       }
     });
   };
 
   // Handle Adopt with SweetAlert2
-  const handleAdopt = async (petId) => {
+  const handleAdopt = (petId) => {
     Swal.fire({
       title: "Mark as Adopted?",
       text: "This action cannot be undone.",
       icon: "question",
       showCancelButton: true,
       confirmButtonText: "Yes, Adopt",
-    }).then(async (result) => {
+    }).then((result) => {
       if (result.isConfirmed) {
-        try {
-          await axios.patch(`http://localhost:5000/pet/${petId}`, {
-            adopted: true,
-          });
-          setPets((prev) =>
-            prev.map((pet) =>
-              pet._id === petId ? { ...pet, adopted: true } : pet
-            )
-          );
-          Swal.fire("Success!", "Pet marked as adopted.", "success");
-        } catch (error) {
-          console.error("Error marking pet as adopted:", error);
-          Swal.fire("Error!", "Failed to mark as adopted.", "error");
-        }
+        adoptMutation.mutate(petId);
       }
     });
   };
 
-  // Table Columns with proper sorting
   const columns = useMemo(
     () => [
       {
         accessorKey: "serial",
         header: "S/N",
-        cell: (info) => info.row.index + 1,
+        cell: (info) => (
+          <Typography className="font-normal">{info.row.index + 1}</Typography>
+        ),
         enableSorting: false,
       },
       {
         accessorKey: "name",
         header: "Pet Name",
+        cell: (info) => (
+          <Typography className="font-normal">{info.getValue()}</Typography>
+        ),
         enableSorting: true,
       },
       {
         accessorKey: "category",
         header: "Category",
+        cell: (info) => (
+          <Typography className="font-normal capitalize">
+            {info.getValue()}
+          </Typography>
+        ),
         enableSorting: true,
       },
       {
         accessorKey: "imageUrl",
         header: "Image",
         cell: (info) => (
-          <img
-            src={info.getValue()}
-            alt={info.row.original.name}
-            className="h-16 w-16 object-cover rounded-md"
-            onError={(e) => {
-              e.target.src = "https://placeholder.com/150";
-            }}
-          />
+          <div className="flex justify-center">
+            <img
+              src={info.getValue()}
+              alt={info.row.original.name}
+              className="h-16 w-16 object-cover rounded-lg shadow-md"
+              onError={(e) => {
+                e.target.src = "/api/placeholder/150/150";
+              }}
+            />
+          </div>
         ),
         enableSorting: false,
       },
       {
         accessorKey: "adopted",
         header: "Adoption Status",
-        cell: (info) => (info.getValue() ? "Adopted" : "Not Adopted"),
+        cell: (info) => (
+          <div
+            className={`px-4 py-1 rounded-full text-center w-24 ${
+              info.getValue()
+                ? "bg-green-100 text-green-800"
+                : "bg-blue-100 text-blue-800"
+            }`}
+          >
+            <Typography className="font-medium text-sm">
+              {info.getValue() ? "Adopted" : "Available"}
+            </Typography>
+          </div>
+        ),
         enableSorting: true,
       },
       {
@@ -139,36 +173,41 @@ const MyAddedPets = () => {
         cell: ({ row }) => (
           <div className="flex gap-2">
             <Button
-              color="blue"
               size="sm"
+              className="px-4 bg-blue-500"
               onClick={() => handleUpdate(row.original._id)}
             >
               Update
             </Button>
             <Button
-              color="red"
               size="sm"
+              className="px-4 bg-red-500"
               onClick={() => handleDelete(row.original._id)}
+              disabled={deleteMutation.isPending}
             >
-              Delete
+              {deleteMutation.isPending ? "Deleting..." : "Delete"}
             </Button>
             <Button
-              color="green"
               size="sm"
-              disabled={row.original.adopted}
+              className="px-4"
+              color={row.original.adopted ? "gray" : "green"}
+              disabled={row.original.adopted || adoptMutation.isPending}
               onClick={() => handleAdopt(row.original._id)}
             >
-              {row.original.adopted ? "Adopted" : "Mark as Adopted"}
+              {row.original.adopted
+                ? "Adopted"
+                : adoptMutation.isPending
+                ? "Processing..."
+                : "Mark Adopted"}
             </Button>
           </div>
         ),
         enableSorting: false,
       },
     ],
-    []
+    [deleteMutation.isPending, adoptMutation.isPending]
   );
 
-  // Table instance with proper sorting configuration
   const table = useReactTable({
     data: pets,
     columns,
@@ -186,93 +225,129 @@ const MyAddedPets = () => {
     },
   });
 
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center h-screen">
-        <Typography>Loading...</Typography>
-      </div>
-    );
-  }
-
   return (
-    <Card className="p-6">
-      <Typography variant="h4" className="font-bold mb-4">
-        My Added Pets
-      </Typography>
-      <div className="overflow-x-auto">
-        <table className="w-full border border-collapse">
-          <thead>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <tr key={headerGroup.id}>
-                {headerGroup.headers.map((header) => (
-                  <th
-                    key={header.id}
-                    className={`border px-4 py-2 ${
-                      header.column.getCanSort()
-                        ? "cursor-pointer hover:bg-gray-50"
-                        : ""
-                    }`}
-                    onClick={header.column.getToggleSortingHandler()}
-                  >
-                    <div className="flex items-center justify-between">
-                      {flexRender(
-                        header.column.columnDef.header,
-                        header.getContext()
-                      )}
-                      {header.column.getCanSort() && (
-                        <span className="ml-2">
-                          {header.column.getIsSorted()
-                            ? header.column.getIsSorted() === "asc"
-                              ? " ↑"
-                              : " ↓"
-                            : " ↕"}
-                        </span>
-                      )}
-                    </div>
-                  </th>
-                ))}
-              </tr>
-            ))}
-          </thead>
-          <tbody>
-            {table.getRowModel().rows.map((row) => (
-              <tr key={row.id}>
-                {row.getVisibleCells().map((cell) => (
-                  <td key={cell.id} className="border px-4 py-2">
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </td>
-                ))}
-              </tr>
-            ))}
-          </tbody>
-        </table>
+    <Card className="h-full w-full p-6 shadow-xl">
+      <div className="mb-8">
+        <Typography
+          variant="h4"
+          color="blue-gray"
+          className="font-bold text-center"
+        >
+          My Added Pets
+        </Typography>
       </div>
 
-      {/* Pagination Controls */}
-      {pets.length > 10 && (
-        <div className="flex items-center gap-2 justify-center mt-4">
-          <Button
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
-            className="px-4 py-2"
-          >
-            Previous
-          </Button>
-          <Typography className="mx-2">
-            Page {table.getState().pagination.pageIndex + 1} of{" "}
-            {table.getPageCount()}
+      {isLoading ? (
+        <TableSkeleton />
+      ) : pets.length === 0 ? (
+        <div className="text-center py-8">
+          <Typography color="gray" className="text-lg">
+            No pets added yet
           </Typography>
-          <Button
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
-            className="px-4 py-2"
-          >
-            Next
-          </Button>
         </div>
+      ) : (
+        <>
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-max table-auto text-left">
+              <thead>
+                {table.getHeaderGroups().map((headerGroup) => (
+                  <tr key={headerGroup.id}>
+                    {headerGroup.headers.map((header) => (
+                      <th
+                        key={header.id}
+                        className="border-b border-blue-gray-100 bg-blue-gray-50 p-4"
+                      >
+                        {header.column.getCanSort() ? (
+                          <div
+                            className="flex items-center gap-2 cursor-pointer"
+                            onClick={header.column.getToggleSortingHandler()}
+                          >
+                            <Typography
+                              variant="small"
+                              color="blue-gray"
+                              className="font-bold leading-none"
+                            >
+                              {flexRender(
+                                header.column.columnDef.header,
+                                header.getContext()
+                              )}
+                            </Typography>
+                            {header.column.getIsSorted() ? (
+                              header.column.getIsSorted() === "asc" ? (
+                                <FaArrowUpLong className="h-4 w-4" />
+                              ) : (
+                                <FaArrowDownLong className="h-4 w-4" />
+                              )
+                            ) : (
+                              <div className="h-4 w-4" />
+                            )}
+                          </div>
+                        ) : (
+                          <Typography
+                            variant="small"
+                            color="blue-gray"
+                            className="font-bold leading-none"
+                          >
+                            {flexRender(
+                              header.column.columnDef.header,
+                              header.getContext()
+                            )}
+                          </Typography>
+                        )}
+                      </th>
+                    ))}
+                  </tr>
+                ))}
+              </thead>
+              <tbody>
+                {table.getRowModel().rows.map((row, index) => (
+                  <tr
+                    key={row.id}
+                    className={index % 2 === 0 ? "bg-blue-gray-50/50" : ""}
+                  >
+                    {row.getVisibleCells().map((cell) => (
+                      <td key={cell.id} className="p-4">
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        )}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Pagination Controls */}
+          {pets.length > 10 && (
+            <div className="flex items-center justify-center gap-4 mt-6">
+              <Button
+                variant="outlined"
+                size="sm"
+                onClick={() => table.previousPage()}
+                disabled={!table.getCanPreviousPage()}
+              >
+                Previous
+              </Button>
+              <Typography color="gray" className="font-normal">
+                Page {table.getState().pagination.pageIndex + 1} of{" "}
+                {table.getPageCount()}
+              </Typography>
+              <Button
+                variant="outlined"
+                size="sm"
+                onClick={() => table.nextPage()}
+                disabled={!table.getCanNextPage()}
+              >
+                Next
+              </Button>
+            </div>
+          )}
+        </>
       )}
     </Card>
   );
 };
 
-export default MyAddedPets;
+export default MyAdded;

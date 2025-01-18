@@ -5,26 +5,6 @@ import reactRefresh from "eslint-plugin-react-refresh";
 import globals from "globals";
 
 export default [
-  {
-    env: {
-      browser: true,
-      node: true, // Add this line
-      es2021: true,
-    },
-    extends: ["eslint:recommended", "plugin:react/recommended"],
-    parserOptions: {
-      ecmaFeatures: {
-        jsx: true,
-      },
-      ecmaVersion: 12,
-      sourceType: "module",
-    },
-    plugins: ["react"],
-    rules: {
-      // Add any custom rules here
-    },
-  },
-
   { ignores: ["dist"] },
   {
     files: ["**/*.{js,jsx}"],
