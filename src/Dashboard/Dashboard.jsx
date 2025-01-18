@@ -15,14 +15,11 @@ const Dashboard = () => {
           <div className="flex flex-col gap-2">
             <NavLink to="/">Home</NavLink>
             <NavLink to="/dashboard">Profile</NavLink>
-            <NavLink to="dashboard/add-pet">Add a Pet</NavLink>
-            <NavLink to="dashboard/my-added">My added pets
-            </NavLink>
+            <NavLink to="add-pet">Add a Pet</NavLink>
+            <NavLink to="my-added">My added pets</NavLink>
 
-            <NavLink to="dashboard/adopt-request">Adoption Request</NavLink>
-            <NavLink to="dashboard/add-donation">
-              Create Donation Campaign
-            </NavLink>
+            <NavLink to="adopt-request">Adoption Request</NavLink>
+            <NavLink to="add-donation">Create Donation Campaign</NavLink>
             <NavLink to="/">My Donation Campaigns</NavLink>
             <NavLink to="/">My Donations</NavLink>
           </div>

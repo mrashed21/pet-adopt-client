@@ -1,36 +1,10 @@
-// // import { AuthContext } from "../../Context/Auth/AuthProvider";
-
-// import { Button, Typography } from "@material-tailwind/react";
-// import { useContext } from "react";
-// import { AuthContext } from "../../Context/Auth/AuthProvider";
-
-// const UserProfile = () => {
-//   const { user } = useContext(AuthContext);
-//   return (
-//     <div className="flex flex-col items-center justify-center">
-//       <div className="h-20 w-20 rounded-full border-2 mt-10">
-//         <img
-//           className="w-full h-full rounded-full"
-//           src={user.photoURL}
-//           alt=""
-//         />
-//       </div>
-//       <Typography variant="h2">{user?.displayName}</Typography>
-//       <Typography variant="small">{user.email}</Typography>
-//       <Button> Update Profile</Button>
-//     </div>
-//   );
-// };
-
-// export default UserProfile;
-
-import { Button, Typography, Input, Dialog } from "@material-tailwind/react";
+import { Button, Dialog, Input, Typography } from "@material-tailwind/react";
+import axios from "axios";
 import { useContext, useState } from "react";
 import { AuthContext } from "../../Context/Auth/AuthProvider";
-import axios from "axios";
 
 const UserProfile = () => {
-  const { user, UpdateProfile } = useContext(AuthContext);
+  const { user, updateUserProfile } = useContext(AuthContext);
   const [open, setOpen] = useState(false);
   const [name, setName] = useState(user?.displayName || "");
   const [image, setImage] = useState(null);
@@ -49,23 +23,17 @@ const UserProfile = () => {
       if (image) {
         const formData = new FormData();
         formData.append("file", image);
-        formData.append("upload_preset", "your_upload_preset"); // Replace with your Cloudinary preset
+        formData.append("upload_preset", "pet_adopt");
 
         const response = await axios.post(
-          "https://api.cloudinary.com/v1_1/your_cloud_name/image/upload",
+          "https://api.cloudinary.com/v1_1/dablesuiy/image/upload",
           formData
         );
         photoURL = response.data.secure_url;
       }
 
       // Update profile in Firebase
-      await UpdateProfile(name, photoURL);
-
-      // Update user in database
-      await axios.put(`/users/update/${user.uid}`, {
-        name,
-        photoURL,
-      });
+      await updateUserProfile(name, photoURL);
 
       alert("Profile updated successfully!");
       setOpen(false);
@@ -78,7 +46,11 @@ const UserProfile = () => {
   return (
     <div className="flex flex-col items-center justify-center">
       <div className="h-20 w-20 rounded-full border-2 mt-10">
-        <img className="w-full h-full rounded-full" src={user.photoURL} alt="" />
+        <img
+          className="w-full h-full rounded-full"
+          src={user.photoURL}
+          alt=""
+        />
       </div>
       <Typography variant="h2">{user?.displayName}</Typography>
       <Typography variant="small">{user.email}</Typography>

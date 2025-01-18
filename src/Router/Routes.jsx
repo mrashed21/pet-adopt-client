@@ -11,6 +11,7 @@ import Home from "../Page/Home/Home/Home";
 import MyAdded from "../Page/MyAdded/MyAdded";
 import PetListing from "../Page/PetListing/PetContainer/PetListing";
 import PetDetails from "../Page/PetListing/PetDetails/PetDetails";
+import UpdatePet from "../Page/UpdatePet/UpdatePet";
 import UserProfile from "../Page/UserProfile/UserProfile";
 import PrivateRoute from "./PrivateRoute";
 
@@ -37,7 +38,6 @@ const Routes = createBrowserRouter([
     path: "/dashboard",
     element: (
       <AuthProvider>
-        {" "}
         <PrivateRoute>
           <Dashboard />
         </PrivateRoute>
@@ -45,10 +45,11 @@ const Routes = createBrowserRouter([
     ),
     children: [
       { path: "/dashboard", element: <UserProfile /> },
-      { path: "dashboard/add-pet", element: <AddPetForm /> },
-      { path: "dashboard/my-added", element: <MyAdded /> },
-      { path: "dashboard/add-donation", element: <AddDonation /> },
-      { path: "dashboard/adopt-request", element: <AdoptRequest /> },
+      { path: "add-pet", element: <AddPetForm /> },
+      { path: "my-added", element: <MyAdded /> },
+      { path: "add-donation", element: <AddDonation /> },
+      { path: "adopt-request", element: <AdoptRequest /> },
+      { path: "update-pet/:id", element: <UpdatePet /> },
     ],
   },
 ]);

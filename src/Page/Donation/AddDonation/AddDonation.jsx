@@ -1,164 +1,3 @@
-// // const AddDonation = () => {
-// //   return <div>this is add donation</div>;
-// // };
-
-// // export default AddDonation;
-
-// import { useState } from 'react';
-// import { Textarea, Input, Button, Card, CardBody, CardFooter, Typography } from '@material-tailwind/react';
-// import axios from 'axios';
-
-// const AddDonation = () => {
-//   const [petPicture, setPetPicture] = useState(null);
-//   const [maxDonation, setMaxDonation] = useState('');
-//   const [lastDate, setLastDate] = useState('');
-//   const [shortDescription, setShortDescription] = useState('');
-//   const [longDescription, setLongDescription] = useState('');
-//   const [isSubmitting, setIsSubmitting] = useState(false);
-
-//   const handleFileChange = (e) => {
-//     setPetPicture(e.target.files[0]);
-//   };
-
-//   const handleSubmit = async (e) => {
-//     e.preventDefault();
-//     setIsSubmitting(true);
-
-//     // Upload the pet picture to Cloudinary or imgBB
-//     const formData = new FormData();
-//     formData.append('file', petPicture);
-//     formData.append('upload_preset', 'your_upload_preset'); // Cloudinary preset or imgBB API key
-
-//     let imageUrl;
-//     try {
-//       const res = await axios.post(
-//         'https://api.cloudinary.com/v1_1/your_cloud_name/image/upload', // Cloudinary API endpoint
-//         formData
-//       );
-//       imageUrl = res.data.secure_url; // Get the URL of the uploaded image
-//     } catch (err) {
-//       console.error('Image upload failed:', err);
-//       setIsSubmitting(false);
-//       return;
-//     }
-
-//     // Create the donation campaign
-//     const donationCampaign = {
-//       petPicture: imageUrl,
-//       maxDonation,
-//       lastDate,
-//       shortDescription,
-//       longDescription,
-//       createdAt: new Date().toISOString(), // Save the creation time
-//     };
-
-//     try {
-//       await axios.post('/api/donation-campaigns', donationCampaign); // Post to your backend API
-//       setIsSubmitting(false);
-//       alert('Donation campaign created successfully!');
-//     } catch (err) {
-//       console.error('Failed to create donation campaign:', err);
-//       setIsSubmitting(false);
-//     }
-//   };
-
-//   return (
-//     <div className="flex justify-center items-center min-h-screen bg-gray-100">
-//       <Card className="w-full max-w-lg p-6">
-//         <CardBody>
-//           <Typography variant="h4" color="blue-gray" className="mb-4 text-center">
-//             Create Donation Campaign
-//           </Typography>
-
-//           <form onSubmit={handleSubmit}>
-//             {/* Pet Picture */}
-//             <div className="mb-4">
-//               <label htmlFor="pet-picture" className="block text-sm font-medium text-gray-700">
-//                 Pet Picture
-//               </label>
-//               <Input
-//                 type="file"
-//                 id="pet-picture"
-//                 onChange={handleFileChange}
-//                 accept="image/*"
-//                 required
-//               />
-//             </div>
-
-//             {/* Maximum Donation */}
-//             <div className="mb-4">
-//               <label htmlFor="max-donation" className="block text-sm font-medium text-gray-700">
-//                 Maximum Donation Amount
-//               </label>
-//               <Input
-//                 type="number"
-//                 id="max-donation"
-//                 value={maxDonation}
-//                 onChange={(e) => setMaxDonation(e.target.value)}
-//                 required
-//               />
-//             </div>
-
-//             {/* Last Date of Donation */}
-//             <div className="mb-4">
-//               <label htmlFor="last-date" className="block text-sm font-medium text-gray-700">
-//                 Last Date of Donation
-//               </label>
-//               <Input
-//                 type="date"
-//                 id="last-date"
-//                 value={lastDate}
-//                 onChange={(e) => setLastDate(e.target.value)}
-//                 required
-//               />
-//             </div>
-
-//             {/* Short Description */}
-//             <div className="mb-4">
-//               <label htmlFor="short-description" className="block text-sm font-medium text-gray-700">
-//                 Short Description
-//               </label>
-//               <Input
-//                 type="text"
-//                 id="short-description"
-//                 value={shortDescription}
-//                 onChange={(e) => setShortDescription(e.target.value)}
-//                 required
-//               />
-//             </div>
-
-//             {/* Long Description */}
-//             <div className="mb-4">
-//               <label htmlFor="long-description" className="block text-sm font-medium text-gray-700">
-//                 Long Description
-//               </label>
-//               <Textarea
-//                 id="long-description"
-//                 value={longDescription}
-//                 onChange={(e) => setLongDescription(e.target.value)}
-//                 required
-//               />
-//             </div>
-
-//             <CardFooter>
-//               <Button
-//                 type="submit"
-//                 fullWidth
-//                 className="bg-blue-500 text-white"
-//                 disabled={isSubmitting}
-//               >
-//                 {isSubmitting ? 'Submitting...' : 'Create Campaign'}
-//               </Button>
-//             </CardFooter>
-//           </form>
-//         </CardBody>
-//       </Card>
-//     </div>
-//   );
-// };
-
-// export default AddDonation;
-
 import {
   Button,
   Card,
@@ -178,7 +17,6 @@ const AddDonation = () => {
     register,
     handleSubmit,
     formState: { errors },
-    setValue,
   } = useForm();
   const [petPicture, setPetPicture] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -190,18 +28,16 @@ const AddDonation = () => {
   const onSubmit = async (data) => {
     setIsSubmitting(true);
 
-    // Upload the pet picture to Cloudinary or imgBB
     const formData = new FormData();
     formData.append("file", petPicture);
-    formData.append("upload_preset", "pet_adopt"); // Cloudinary preset or imgBB API key
-
+    formData.append("upload_preset", "pet_adopt");
     let imageUrl;
     try {
       const res = await axios.post(
-        "https://api.cloudinary.com/v1_1/dablesuiy/image/upload", // Cloudinary API endpoint
+        "https://api.cloudinary.com/v1_1/dablesuiy/image/upload",
         formData
       );
-      imageUrl = res.data.secure_url; // Get the URL of the uploaded image
+      imageUrl = res.data.secure_url;
     } catch (err) {
       console.error("Image upload failed:", err);
       setIsSubmitting(false);
@@ -215,11 +51,14 @@ const AddDonation = () => {
       lastDate: data.lastDate,
       shortDescription: data.shortDescription,
       longDescription: data.longDescription,
-      createdAt: new Date().toISOString(), // Save the creation time
+      createdAt: new Date().toISOString(),
     };
 
     try {
-      await axios.post("http://localhost:5000/donation-campaigns", donationCampaign); // Post to your backend API
+      await axios.post(
+        "http://localhost:5000/donation-campaigns",
+        donationCampaign
+      );
       setIsSubmitting(false);
       alert("Donation campaign created successfully!");
     } catch (err) {

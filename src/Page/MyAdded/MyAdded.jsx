@@ -1,24 +1,25 @@
+import { Button, Card, Typography } from "@material-tailwind/react";
 import {
-  Button,
-  Modal,
-  ModalBody,
-  ModalFooter,
-  ModalHeader,
-} from "@material-tailwind/react";
-import { useReactTable } from "@tanstack/react-table";
+  flexRender,
+  getCoreRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  useReactTable,
+} from "@tanstack/react-table";
 import axios from "axios";
 import { useContext, useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
 import { AuthContext } from "../../Context/Auth/AuthProvider";
 
 const MyAddedPets = () => {
   const { user } = useContext(AuthContext);
   const [pets, setPets] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [petToDelete, setPetToDelete] = useState(null);
-  const [pageIndex, setPageIndex] = useState(0);
-  const [pageSize, setPageSize] = useState(10);
+  const [sorting, setSorting] = useState([]);
+  const navigate = useNavigate();
 
+  // Fetch Pets
   useEffect(() => {
     const fetchPets = async () => {
       try {
@@ -35,60 +36,102 @@ const MyAddedPets = () => {
     fetchPets();
   }, [user.email]);
 
-  const handleDelete = async () => {
-    if (!petToDelete) return;
-    try {
-      await axios.delete(`http://localhost:5000/pet/${petToDelete}`);
-      setPets((prev) => prev.filter((pet) => pet._id !== petToDelete));
-      setIsDeleteModalOpen(false);
-    } catch (error) {
-      console.error("Error deleting pet:", error);
-    }
+  // Handle Update
+  const handleUpdate = (id) => {
+    navigate(`/dashboard/update-pet/${id}`);
   };
 
+  // Handle Delete with SweetAlert2
+  const handleDelete = async (petId) => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          await axios.delete(`http://localhost:5000/pets/${petId}`);
+          setPets((prev) => prev.filter((pet) => pet._id !== petId));
+          Swal.fire("Deleted!", "Your pet has been deleted.", "success");
+        } catch (error) {
+          console.error("Error deleting pet:", error);
+          Swal.fire("Error!", "Failed to delete pet.", "error");
+        }
+      }
+    });
+  };
+
+  // Handle Adopt with SweetAlert2
   const handleAdopt = async (petId) => {
-    try {
-      await axios.patch(`http://localhost:5000/pet/${petId}`, {
-        adopted: true,
-      });
-      setPets((prev) =>
-        prev.map((pet) => (pet._id === petId ? { ...pet, adopted: true } : pet))
-      );
-    } catch (error) {
-      console.error("Error marking pet as adopted:", error);
-    }
+    Swal.fire({
+      title: "Mark as Adopted?",
+      text: "This action cannot be undone.",
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonText: "Yes, Adopt",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          await axios.patch(`http://localhost:5000/pet/${petId}`, {
+            adopted: true,
+          });
+          setPets((prev) =>
+            prev.map((pet) =>
+              pet._id === petId ? { ...pet, adopted: true } : pet
+            )
+          );
+          Swal.fire("Success!", "Pet marked as adopted.", "success");
+        } catch (error) {
+          console.error("Error marking pet as adopted:", error);
+          Swal.fire("Error!", "Failed to mark as adopted.", "error");
+        }
+      }
+    });
   };
 
+  // Table Columns with proper sorting
   const columns = useMemo(
     () => [
       {
         accessorKey: "serial",
         header: "S/N",
         cell: (info) => info.row.index + 1,
+        enableSorting: false,
       },
       {
         accessorKey: "name",
         header: "Pet Name",
+        enableSorting: true,
       },
       {
         accessorKey: "category",
         header: "Category",
+        enableSorting: true,
       },
       {
-        accessorKey: "image",
+        accessorKey: "imageUrl",
         header: "Image",
         cell: (info) => (
           <img
             src={info.getValue()}
             alt={info.row.original.name}
             className="h-16 w-16 object-cover rounded-md"
+            onError={(e) => {
+              e.target.src = "https://placeholder.com/150";
+            }}
           />
         ),
+        enableSorting: false,
       },
       {
         accessorKey: "adopted",
         header: "Adoption Status",
         cell: (info) => (info.getValue() ? "Adopted" : "Not Adopted"),
+        enableSorting: true,
       },
       {
         id: "actions",
@@ -98,19 +141,14 @@ const MyAddedPets = () => {
             <Button
               color="blue"
               size="sm"
-              onClick={() =>
-                (window.location.href = `/update-pet/${row.original._id}`)
-              }
+              onClick={() => handleUpdate(row.original._id)}
             >
               Update
             </Button>
             <Button
               color="red"
               size="sm"
-              onClick={() => {
-                setPetToDelete(row.original._id);
-                setIsDeleteModalOpen(true);
-              }}
+              onClick={() => handleDelete(row.original._id)}
             >
               Delete
             </Button>
@@ -120,80 +158,120 @@ const MyAddedPets = () => {
               disabled={row.original.adopted}
               onClick={() => handleAdopt(row.original._id)}
             >
-              Adopted
+              {row.original.adopted ? "Adopted" : "Mark as Adopted"}
             </Button>
           </div>
         ),
+        enableSorting: false,
       },
     ],
     []
   );
 
+  // Table instance with proper sorting configuration
   const table = useReactTable({
     data: pets,
     columns,
-    manualPagination: true,
-    pageCount: Math.ceil(pets.length / pageSize),
     state: {
-      pageIndex,
-      pageSize,
+      sorting,
     },
-    onPaginationChange: ({ pageIndex, pageSize }) => {
-      setPageIndex(pageIndex);
-      setPageSize(pageSize);
+    onSortingChange: setSorting,
+    getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    initialState: {
+      pagination: {
+        pageSize: 10,
+      },
     },
   });
 
-  if (loading) return <p>Loading...</p>;
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <Typography>Loading...</Typography>
+      </div>
+    );
+  }
 
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold mb-4">My Added Pets</h1>
-      <table className="w-full border border-collapse">
-        <thead>
-          <tr>
-            {columns.map((column) => (
-              <th
-                key={column.id || column.accessorKey}
-                className="border px-4 py-2"
-              >
-                {column.header}
-              </th>
+    <Card className="p-6">
+      <Typography variant="h4" className="font-bold mb-4">
+        My Added Pets
+      </Typography>
+      <div className="overflow-x-auto">
+        <table className="w-full border border-collapse">
+          <thead>
+            {table.getHeaderGroups().map((headerGroup) => (
+              <tr key={headerGroup.id}>
+                {headerGroup.headers.map((header) => (
+                  <th
+                    key={header.id}
+                    className={`border px-4 py-2 ${
+                      header.column.getCanSort()
+                        ? "cursor-pointer hover:bg-gray-50"
+                        : ""
+                    }`}
+                    onClick={header.column.getToggleSortingHandler()}
+                  >
+                    <div className="flex items-center justify-between">
+                      {flexRender(
+                        header.column.columnDef.header,
+                        header.getContext()
+                      )}
+                      {header.column.getCanSort() && (
+                        <span className="ml-2">
+                          {header.column.getIsSorted()
+                            ? header.column.getIsSorted() === "asc"
+                              ? " ↑"
+                              : " ↓"
+                            : " ↕"}
+                        </span>
+                      )}
+                    </div>
+                  </th>
+                ))}
+              </tr>
             ))}
-          </tr>
-        </thead>
-        <tbody>
-          {table.getRowModel().rows.map((row) => (
-            <tr key={row.id}>
-              {row.getVisibleCells().map((cell) => (
-                <td key={cell.id} className="border px-4 py-2">
-                  {cell.renderCell()}
-                </td>
-              ))}
-            </tr>
-          ))}
-        </tbody>
-      </table>
-      {isDeleteModalOpen && (
-        <Modal
-          open={isDeleteModalOpen}
-          onClose={() => setIsDeleteModalOpen(false)}
-        >
-          <ModalHeader>Delete Pet</ModalHeader>
-          <ModalBody>
-            <p>Are you sure you want to delete this pet?</p>
-          </ModalBody>
-          <ModalFooter>
-            <Button color="red" onClick={handleDelete} className="mr-2">
-              Yes
-            </Button>
-            <Button color="blue" onClick={() => setIsDeleteModalOpen(false)}>
-              No
-            </Button>
-          </ModalFooter>
-        </Modal>
+          </thead>
+          <tbody>
+            {table.getRowModel().rows.map((row) => (
+              <tr key={row.id}>
+                {row.getVisibleCells().map((cell) => (
+                  <td key={cell.id} className="border px-4 py-2">
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Pagination Controls */}
+      {pets.length > 10 && (
+        <div className="flex items-center gap-2 justify-center mt-4">
+          <Button
+            onClick={() => table.previousPage()}
+            disabled={!table.getCanPreviousPage()}
+            className="px-4 py-2"
+          >
+            Previous
+          </Button>
+          <Typography className="mx-2">
+            Page {table.getState().pagination.pageIndex + 1} of{" "}
+            {table.getPageCount()}
+          </Typography>
+          <Button
+            onClick={() => table.nextPage()}
+            disabled={!table.getCanNextPage()}
+            className="px-4 py-2"
+          >
+            Next
+          </Button>
+        </div>
       )}
-    </div>
+    </Card>
   );
 };
 
