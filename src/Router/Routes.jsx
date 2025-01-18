@@ -4,6 +4,7 @@ import Register from "../Components/Register/Register";
 import AuthProvider from "../Context/Auth/AuthProvider";
 import AdoptRequest from "../Dashboard/AdoptRequest/AdoptRequest";
 import Dashboard from "../Dashboard/Dashboard";
+import DashBoardHome from "../Dashboard/Home/DashBoardHome";
 import MainLayOut from "../Layout/MainLayOut";
 import AddPetForm from "../Page/AddPetFrom/AddPetFrom";
 import AddDonation from "../Page/Donation/AddDonation/AddDonation";
@@ -35,7 +36,7 @@ const Routes = createBrowserRouter([
     ],
   },
   {
-    path: "/dashboard",
+    path: "dashboard",
     element: (
       <AuthProvider>
         <PrivateRoute>
@@ -44,7 +45,8 @@ const Routes = createBrowserRouter([
       </AuthProvider>
     ),
     children: [
-      { path: "/dashboard", element: <UserProfile /> },
+      { path: "dashboard", element: <DashBoardHome /> },
+      { path: "profile", element: <UserProfile /> },
       { path: "add-pet", element: <AddPetForm /> },
       { path: "my-added", element: <MyAdded /> },
       { path: "add-donation", element: <AddDonation /> },
