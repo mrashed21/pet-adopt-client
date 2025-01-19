@@ -15,6 +15,7 @@ import PetDetails from "../Page/PetListing/PetDetails/PetDetails";
 import UpdatePet from "../Page/UpdatePet/UpdatePet";
 import UserProfile from "../Page/UserProfile/UserProfile";
 import PrivateRoute from "./PrivateRoute";
+import DonationPage from "../Page/Donation/DonationPage/DonationPage";
 
 const Routes = createBrowserRouter([
   {
@@ -29,7 +30,7 @@ const Routes = createBrowserRouter([
       { path: "/", element: <Home /> },
       { path: "/pet-listing", element: <PetListing /> },
       { path: "/pets/:id", element: <PetDetails /> },
-      { path: "/contact", element: <h2>Contact</h2> },
+      { path: "/donation", element: <DonationPage/> },
 
       { path: "/login", element: <Login /> },
       { path: "/register", element: <Register /> },
