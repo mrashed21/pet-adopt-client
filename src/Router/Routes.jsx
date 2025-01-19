@@ -30,9 +30,23 @@ const Routes = createBrowserRouter([
     children: [
       { path: "/", element: <Home /> },
       { path: "/pet-listing", element: <PetListing /> },
-      { path: "/pets/:id", element: <PetDetails /> },
+      {
+        path: "/pets/:id",
+        element: (
+          <PrivateRoute>
+            <PetDetails />
+          </PrivateRoute>
+        ),
+      },
       { path: "/donation", element: <DonationPage /> },
-      { path: "/donation/:id", element: <DonationDetails /> },
+      {
+        path: "/donation/:id",
+        element: (
+          <PrivateRoute>
+            <DonationDetails />
+          </PrivateRoute>
+        ),
+      },
 
       { path: "/login", element: <Login /> },
       { path: "/register", element: <Register /> },
@@ -48,13 +62,62 @@ const Routes = createBrowserRouter([
       </AuthProvider>
     ),
     children: [
-      { path: "dashboard", element: <DashBoardHome /> },
-      { path: "profile", element: <UserProfile /> },
-      { path: "add-pet", element: <AddPetForm /> },
-      { path: "my-added", element: <MyAdded /> },
-      { path: "add-donation", element: <AddDonation /> },
-      { path: "adopt-request", element: <AdoptRequest /> },
-      { path: "update-pet/:id", element: <UpdatePet /> },
+      {
+        path: "dashboard",
+        element: (
+          <PrivateRoute>
+            <DashBoardHome />
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: "profile",
+        element: (
+          <PrivateRoute>
+            <UserProfile />
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: "add-pet",
+        element: (
+          <PrivateRoute>
+            <AddPetForm />
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: "my-added",
+        element: (
+          <PrivateRoute>
+            <MyAdded />
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: "add-donation",
+        element: (
+          <PrivateRoute>
+            <AddDonation />
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: "adopt-request",
+        element: (
+          <PrivateRoute>
+            <AdoptRequest />
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: "update-pet/:id",
+        element: (
+          <PrivateRoute>
+            <UpdatePet />
+          </PrivateRoute>
+        ),
+      },
     ],
   },
 ]);

@@ -110,6 +110,7 @@ const PetDetails = () => {
         petAge: pet.age,
         petCategory: pet.category,
         petLocation: pet.location,
+        petOwnerEmail: pet.userEmail,
         adopterName: user.displayName,
         adopterEmail: user.email,
         phoneNumber: e.target.phoneNumber.value,

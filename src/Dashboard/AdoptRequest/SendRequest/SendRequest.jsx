@@ -1,223 +1,172 @@
-// const SendRequest = () => {
-//   return <div>this is send request</div>;
-// };
+import { Button, Card, CardBody, Typography } from "@material-tailwind/react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useContext } from "react";
+import { AuthContext } from "../../../Context/Auth/AuthProvider";
+import useAxiosSecure from "../../../Hooks/UseAxiosSecure/useAxiosSecure";
 
-// export default SendRequest;
-// import { Button } from "@/components/ui/button";
-import React, { useState, useEffect } from 'react';
-import { 
-  Card,
-  CardHeader,
-  CardBody,
-  Typography,
-  Button,
-  Spinner
-} from "@material-tailwind/react";
-import { 
-  FaCheck, 
-  FaTimes, 
-  FaSpinner 
-} from 'react-icons/fa';
-import axios from 'axios';
+const TABLE_HEAD = [
+  "Pet Image",
+  "Pet Name",
+  "Adoption Date",
+  "Status",
+  "Actions",
+];
 
-const AdoptionRequests = () => {
-  const [adoptionRequests, setAdoptionRequests] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [processingIds, setProcessingIds] = useState(new Set());
+const ReceiveRequest = () => {
+  const { user } = useContext(AuthContext);
+  const axiosSecure = useAxiosSecure();
+  const queryClient = useQueryClient();
 
-  useEffect(() => {
-    fetchAdoptionRequests();
-  }, []);
+  const {
+    data: adoptions = [],
+    isLoading,
+    isError,
+    error,
+  } = useQuery({
+    queryKey: ["adoptions", user?.email],
+    queryFn: async () => {
+      const response = await axiosSecure.get(`/adoptions/send/${user?.email}`);
+      return response.data;
+    },
+    enabled: !!user?.email,
+  });
 
-  const fetchAdoptionRequests = async () => {
-    try {
-      const userEmail = localStorage.getItem('userEmail');
-      const response = await axios.get(`http://localhost:5000/adoptions/${userEmail}`, {
-        withCredentials: true
+  const updateAdoptionRequest = useMutation({
+    mutationFn: async ({ adoptionId, status }) => {
+      const response = await axiosSecure.patch(`/adoptions/${adoptionId}`, {
+        status,
       });
-      setAdoptionRequests(response.data);
-      setError(null);
-    } catch (err) {
-      setError('Failed to fetch adoption requests');
-      console.error('Error:', err);
-    } finally {
-      setLoading(false);
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(["adoptions", user?.email]);
+    },
+    onError: (error) => {
+      console.error("Error updating adoption request:", error);
+    },
+  });
+
+  const handleAction = (adoptionId, status) => {
+    const confirmed = window.confirm(
+      `Are you sure you want to ${status} this request?`
+    );
+    if (confirmed) {
+      updateAdoptionRequest.mutate({ adoptionId, status });
     }
   };
 
-  const handleStatusUpdate = async (adoptionId, petId, newStatus) => {
-    setProcessingIds(prev => new Set(prev).add(adoptionId));
-    try {
-      await axios.patch(`http://localhost:5000/adoptions/${adoptionId}`, {
-        status: newStatus
-      }, {
-        withCredentials: true
-      });
-
-      await axios.patch(`http://localhost:5000/pet/${petId}`, {
-        adopted: newStatus === 'accepted' ? true : false
-      }, {
-        withCredentials: true
-      });
-
-      await fetchAdoptionRequests();
-    } catch (err) {
-      console.error('Error updating status:', err);
-      setError('Failed to update adoption status');
-    } finally {
-      setProcessingIds(prev => {
-        const newSet = new Set(prev);
-        newSet.delete(adoptionId);
-        return newSet;
-      });
-    }
-  };
-
-  if (loading) {
+  if (isLoading) {
     return (
-      <div className="flex justify-center items-center min-h-[400px]">
-        <Spinner className="h-8 w-8" />
+      <div className="container mx-auto px-4 py-8">
+        <Typography variant="h6">Loading adoption requests...</Typography>
       </div>
     );
   }
 
-  if (error) {
+  if (isError) {
     return (
-      <div className="text-center text-red-500 p-4">
-        {error}
+      <div className="container mx-auto px-4 py-8">
+        <Typography color="red" variant="h6">
+          Error: {error?.message}
+        </Typography>
+      </div>
+    );
+  }
+
+  if (!adoptions.length) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <Typography variant="h6">No adoption requests found.</Typography>
       </div>
     );
   }
 
   return (
-    <Card className="w-full">
-      <CardHeader floated={false} shadow={false} className="rounded-none">
-        <div className="mb-4 flex flex-col justify-between gap-8 md:flex-row md:items-center">
-          <div>
-            <Typography variant="h5" color="blue-gray">
-              Adoption Requests
-            </Typography>
-            <Typography color="gray" className="mt-1 font-normal">
-              Manage adoption requests for your pets
-            </Typography>
-          </div>
-        </div>
-      </CardHeader>
-      <CardBody className="overflow-x-scroll px-0">
-        <table className="w-full min-w-max table-auto text-left">
-          <thead>
-            <tr>
-              {["Pet", "Requester", "Contact", "Status", "Actions"].map((head) => (
-                <th key={head} className="border-b border-blue-gray-100 bg-blue-gray-50 p-4">
-                  <Typography
-                    variant="small"
-                    color="blue-gray"
-                    className="font-normal leading-none opacity-70"
-                  >
-                    {head}
-                  </Typography>
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {adoptionRequests.map((request, index) => {
-              const isLast = index === adoptionRequests.length - 1;
-              const classes = isLast ? "p-4" : "p-4 border-b border-blue-gray-50";
-
-              return (
-                <tr key={request._id}>
-                  <td className={classes}>
-                    <div className="flex items-center gap-3">
+    <div className="container mx-auto px-4 py-8">
+      <Card className="h-full w-full">
+        <CardBody>
+          <Typography variant="h5" color="blue-gray" className="mb-6">
+            Adoption Requests for Your Pets
+          </Typography>
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-max table-auto text-left">
+              <thead>
+                <tr>
+                  {TABLE_HEAD.map((head) => (
+                    <th
+                      key={head}
+                      className="border-b border-blue-gray-100 bg-blue-gray-50 p-4"
+                    >
+                      <Typography
+                        variant="small"
+                        color="blue-gray"
+                        className="font-normal leading-none opacity-70"
+                      >
+                        {head}
+                      </Typography>
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {adoptions.map((adoption) => (
+                  <tr key={adoption._id} className="even:bg-blue-gray-50/50">
+                    {/* Pet Image */}
+                    <td className="p-4">
                       <img
-                        src={request.petImage}
-                        alt={request.petName}
-                        className="h-12 w-12 rounded-full object-cover"
+                        src={adoption.petImage}
+                        alt={adoption.petName}
+                        className="w-16 h-16 object-cover rounded-lg"
                       />
-                      <Typography variant="small" color="blue-gray" className="font-bold">
-                        {request.petName}
+                    </td>
+                    {/* Pet Name */}
+                    <td className="p-4">
+                      <Typography variant="small" color="blue-gray">
+                        {adoption.petName}
                       </Typography>
-                    </div>
-                  </td>
-                  <td className={classes}>
-                    <div>
-                      <Typography variant="small" color="blue-gray" className="font-normal">
-                        {request.userName}
+                    </td>
+                    {/* Adoption Date */}
+                    <td className="p-4">
+                      <Typography variant="small" color="blue-gray">
+                        {new Date(adoption.adoptionDate).toLocaleDateString()}
                       </Typography>
-                      <Typography variant="small" color="blue-gray" className="font-normal opacity-70">
-                        {request.address}
-                      </Typography>
-                    </div>
-                  </td>
-                  <td className={classes}>
-                    <div>
-                      <Typography variant="small" color="blue-gray" className="font-normal">
-                        {request.email}
-                      </Typography>
-                      <Typography variant="small" color="blue-gray" className="font-normal opacity-70">
-                        {request.phoneNumber}
-                      </Typography>
-                    </div>
-                  </td>
-                  <td className={classes}>
-                    <div className={`w-max rounded-lg ${
-                      request.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
-                      request.status === 'accepted' ? 'bg-green-100 text-green-800' :
-                      'bg-red-100 text-red-800'
-                    } px-2 py-1`}>
-                      <Typography variant="small" className="font-medium">
-                        {request.status}
-                      </Typography>
-                    </div>
-                  </td>
-                  <td className={classes}>
-                    {request.status === 'pending' && (
+                    </td>
+                    {/* Status */}
+                    <td className="p-4">
+                      <div
+                        className={`px-2 py-1 rounded-full text-xs font-semibold inline-block ${
+                          adoption.status === "accepted"
+                            ? "bg-green-100 text-green-800"
+                            : adoption.status === "rejected"
+                            ? "bg-red-100 text-red-800"
+                            : "bg-blue-100 text-blue-800"
+                        }`}
+                      >
+                        {adoption.status}
+                      </div>
+                    </td>
+                    {/* Actions */}
+                    <td className="p-4">
                       <div className="flex gap-2">
-                        <Button
-                          color="green"
-                          size="sm"
-                          variant="filled"
-                          className="flex items-center gap-2"
-                          onClick={() => handleStatusUpdate(request._id, request.petId, 'accepted')}
-                          disabled={processingIds.has(request._id)}
-                        >
-                          {processingIds.has(request._id) ? (
-                            <FaSpinner className="h-4 w-4 animate-spin" />
-                          ) : (
-                            <FaCheck className="h-4 w-4" />
-                          )}
-                        </Button>
                         <Button
                           color="red"
                           size="sm"
-                          variant="filled"
-                          className="flex items-center gap-2"
-                          onClick={() => handleStatusUpdate(request._id, request.petId, 'rejected')}
-                          disabled={processingIds.has(request._id)}
+                          onClick={() => handleAction(adoption._id, "rejected")}
+                          disabled={adoption.status !== "pending"}
                         >
-                          {processingIds.has(request._id) ? (
-                            <FaSpinner className="h-4 w-4 animate-spin" />
-                          ) : (
-                            <FaTimes className="h-4 w-4" />
-                          )}
+                          Reject
                         </Button>
                       </div>
-                    )}
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-        {adoptionRequests.length === 0 && (
-          <div className="text-center py-8 text-gray-500">
-            <Typography>No adoption requests found</Typography>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
-        )}
-      </CardBody>
-    </Card>
+        </CardBody>
+      </Card>
+    </div>
   );
 };
 
-export default AdoptionRequests;
+export default ReceiveRequest;
