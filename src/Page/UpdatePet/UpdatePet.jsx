@@ -1,7 +1,12 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable no-unused-vars */
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import Select from "react-select"; // Import react-select
+import Select from "react-select";
+import Swal from "sweetalert2";
+import SkeletonCard from "../../Common/Skeleton/SkeletonCard";
+import useAxiosSecure from "../../Hooks/UseAxiosSecure/useAxiosSecure";
 
 const PET_CATEGORIES = [
   { value: "dog", label: "Dog" },
@@ -20,11 +25,11 @@ const UpdatePet = () => {
   const [updating, setUpdating] = useState(false);
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
-
+  const axiosSecure = useAxiosSecure();
   useEffect(() => {
     const fetchPet = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/pets/${id}`);
+        const response = await axiosSecure.get(`/pets/${id}`);
         setPet(response.data);
         setError(null);
       } catch (error) {
@@ -113,13 +118,17 @@ const UpdatePet = () => {
     // Update the pet data in the database
     const { _id, ...petData } = pet;
     try {
-      const response = await axios.put(`http://localhost:5000/pets/${id}`, {
+      const response = await axiosSecure.put(`/pets/${id}`, {
         ...petData,
         imageUrl,
         age: Number(pet.age),
       });
       console.log("Update response:", response.data);
-      alert("Pet updated successfully!");
+      Swal.fire({
+        title: "Pet updated successfully!",
+        icon: "success",
+        draggable: true,
+      });
       navigate(-1);
     } catch (error) {
       console.error("Update error:", error.response?.data);
@@ -129,7 +138,7 @@ const UpdatePet = () => {
     }
   };
 
-  if (loading) return <p>loading...</p>;
+  if (loading) return <SkeletonCard />;
   if (!pet) return <div className="text-center mt-8">Pet not found</div>;
 
   return (
