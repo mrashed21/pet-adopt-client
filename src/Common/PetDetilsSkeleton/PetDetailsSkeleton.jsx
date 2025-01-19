@@ -19,8 +19,7 @@ import { format } from "date-fns";
 import { useContext, useState } from "react";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
-import { useNavigate, useParams } from "react-router-dom";
-import Swal from "sweetalert2";
+import { useParams } from "react-router-dom";
 import { AuthContext } from "../../../Context/Auth/AuthProvider";
 import useAxiosSecure from "../../../Hooks/UseAxiosSecure/useAxiosSecure";
 
@@ -77,7 +76,6 @@ const PetDetails = () => {
   const [showModal, setShowModal] = useState(false);
   const [loading, setLoading] = useState(false);
   const { user } = useContext(AuthContext);
-  const navigate = useNavigate();
   const axiosSecure = useAxiosSecure();
   const {
     data: pet,
@@ -91,11 +89,42 @@ const PetDetails = () => {
     },
   });
 
+  // const handleAdopt = async (e) => {
+  //   e.preventDefault();
+  //   setLoading(true);
+
+  //   const adoptionData = {
+  //     petId: pet._id,
+  //     petName: pet.name,
+  //     petImage: pet.imageUrl,
+  //     userName: user.displayName,
+  //     email: user.email,
+  //     phoneNumber: e.target.phoneNumber.value,
+  //     address: e.target.address.value,
+  //   };
+
+  //   try {
+  //     const response = await axiosSecure.post("/adopt", adoptionData);
+
+  //     const data = await response.data();
+
+  //     if (data.message) {
+  //       alert("Adoption request submitted successfully!");
+  //       setShowModal(false);
+  //     }
+  //   } catch (error) {
+  //     console.error("Failed to submit adoption request:", error);
+  //     alert("Failed to submit adoption request");
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
   const handleAdopt = async (e) => {
     e.preventDefault();
     setLoading(true);
 
     try {
+      // 1. First update pet status to pending
       const updateResponse = await axiosSecure.patch(`/pets/${pet._id}`, {
         adopted: "pending",
       });
@@ -103,17 +132,22 @@ const PetDetails = () => {
       if (!updateResponse.data.success) {
         throw new Error("Failed to update pet status");
       }
+
+      // 2. Create adoption request with all required information
       const adoptionData = {
+        // Pet Information
         petId: pet._id,
         petName: pet.name,
         petImage: pet.imageUrl,
         petAge: pet.age,
         petCategory: pet.category,
         petLocation: pet.location,
+
+        // Adopter Information
         adopterName: user.displayName,
         adopterEmail: user.email,
         phoneNumber: e.target.phoneNumber.value,
-        address: e.target.address.value,
+        address: e.target.address,
         status: "pending",
         adoptionDate: new Date(),
       };
@@ -124,22 +158,18 @@ const PetDetails = () => {
       );
 
       if (adoptionResponse.data.success) {
-        Swal.fire({
-          title: "Adoption request submitted successfully!",
-          icon: "success",
-          draggable: true,
-        }).then(() => {
-          navigate("/pet-listing");
-        });
+        alert("Adoption request submitted successfully!");
         setShowModal(false);
+        // Optionally refresh the page or update the UI
+        window.location.reload();
       }
     } catch (error) {
       console.error("Adoption request failed:", error);
-      Swal.fire({
-        title: "Failed to submit adoption request",
-        icon: "error",
-        draggable: true,
-      });
+      alert(
+        error.response?.data?.message || "Failed to submit adoption request"
+      );
+
+      // If adoption request fails, try to revert pet status
       try {
         await axiosSecure.patch(`/pets/${pet._id}`, {
           adopted: false,
