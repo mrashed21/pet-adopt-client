@@ -1,4 +1,3 @@
-
 import { Avatar, Button, Typography } from "@material-tailwind/react";
 import { useContext } from "react";
 import {
@@ -132,7 +131,7 @@ const Dashboard = () => {
               Create Donation Campaign
             </NavLink>
             <NavLink
-              to="/"
+              to="my-compain"
               className={({ isActive }) =>
                 `flex items-center gap-3 p-3 rounded-lg transition-colors ${
                   isActive

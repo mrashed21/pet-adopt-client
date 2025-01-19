@@ -1,6 +1,8 @@
+
 import { Button, Card, CardBody, Typography } from "@material-tailwind/react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useContext } from "react";
+import Swal from "sweetalert2";
 import { AuthContext } from "../../../Context/Auth/AuthProvider";
 import useAxiosSecure from "../../../Hooks/UseAxiosSecure/useAxiosSecure";
 
@@ -31,28 +33,42 @@ const ReceiveRequest = () => {
     enabled: !!user?.email,
   });
 
-  const updateAdoptionRequest = useMutation({
-    mutationFn: async ({ adoptionId, status }) => {
-      const response = await axiosSecure.patch(`/adoptions/${adoptionId}`, {
-        status,
-      });
+  const deleteAdoptionRequest = useMutation({
+    mutationFn: async (adoptionId) => {
+      const response = await axiosSecure.delete(`/adoptions/${adoptionId}`);
       return response.data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries(["adoptions", user?.email]);
+      Swal.fire(
+        "Deleted!",
+        "The adoption request has been deleted.",
+        "success"
+      );
     },
     onError: (error) => {
-      console.error("Error updating adoption request:", error);
+      Swal.fire(
+        "Error!",
+        error.response?.data?.message || "Failed to delete request.",
+        "error"
+      );
     },
   });
 
-  const handleAction = (adoptionId, status) => {
-    const confirmed = window.confirm(
-      `Are you sure you want to ${status} this request?`
-    );
-    if (confirmed) {
-      updateAdoptionRequest.mutate({ adoptionId, status });
-    }
+  const handleReject = (adoptionId) => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to undo this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Yes, reject it!",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        deleteAdoptionRequest.mutate(adoptionId);
+      }
+    });
   };
 
   if (isLoading) {
@@ -151,7 +167,7 @@ const ReceiveRequest = () => {
                         <Button
                           color="red"
                           size="sm"
-                          onClick={() => handleAction(adoption._id, "rejected")}
+                          onClick={() => handleReject(adoption._id)}
                           disabled={adoption.status !== "pending"}
                         >
                           Reject

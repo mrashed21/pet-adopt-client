@@ -4,7 +4,7 @@ import Register from "../Components/Register/Register";
 import AuthProvider from "../Context/Auth/AuthProvider";
 import AdoptRequest from "../Dashboard/AdoptRequest/AdoptRequest";
 import Dashboard from "../Dashboard/Dashboard";
-import DashBoardHome from "../Dashboard/Home/DashBoardHome";
+// import DashBoardHome from "../Dashboard/Home/DashBoardHome";
 import MainLayOut from "../Layout/MainLayOut";
 import AddPetForm from "../Page/AddPetFrom/AddPetFrom";
 import AddDonation from "../Page/Donation/AddDonation/AddDonation";
@@ -17,6 +17,7 @@ import PetDetails from "../Page/PetListing/PetDetails/PetDetails";
 import UpdatePet from "../Page/UpdatePet/UpdatePet";
 import UserProfile from "../Page/UserProfile/UserProfile";
 import PrivateRoute from "./PrivateRoute";
+import MyCompain from "../Page/Donation/MyCompain/MyCompain";
 
 const Routes = createBrowserRouter([
   {
@@ -40,7 +41,7 @@ const Routes = createBrowserRouter([
       },
       { path: "/donation", element: <DonationPage /> },
       {
-        path: "/donation/:id",
+        path: "/donations/:id",
         element: (
           <PrivateRoute>
             <DonationDetails />
@@ -62,15 +63,16 @@ const Routes = createBrowserRouter([
       </AuthProvider>
     ),
     children: [
+      // {
+      //   path: "dashboard",
+      //   element: (
+      //     <PrivateRoute>
+      //       <DashBoardHome />
+      //     </PrivateRoute>
+      //   ),
+      // },
       {
-        path: "dashboard",
-        element: (
-          <PrivateRoute>
-            <DashBoardHome />
-          </PrivateRoute>
-        ),
-      },
-      {
+        index: true,
         path: "profile",
         element: (
           <PrivateRoute>
@@ -99,6 +101,14 @@ const Routes = createBrowserRouter([
         element: (
           <PrivateRoute>
             <AddDonation />
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: "my-compain",
+        element: (
+          <PrivateRoute>
+            <MyCompain/>
           </PrivateRoute>
         ),
       },
