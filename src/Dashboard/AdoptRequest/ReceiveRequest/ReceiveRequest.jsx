@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { Button, Card, CardBody, Typography } from "@material-tailwind/react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useContext } from "react";
@@ -50,7 +51,6 @@ const ReceiveRequest = () => {
   });
 
   const handleAction = (adoptionId, status, petId) => {
-    // Determine message for confirmation based on status
     const actionMessage =
       status === "accepted" ? "Accept this request?" : "Reject this request?";
 
@@ -65,7 +65,6 @@ const ReceiveRequest = () => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         if (status === "accepted") {
-          // Update the adoption request status to accepted
           try {
             await updateAdoptionRequest.mutateAsync({ adoptionId, status });
             Swal.fire(
@@ -82,7 +81,6 @@ const ReceiveRequest = () => {
             );
           }
         } else if (status === "rejected") {
-          // Handle rejection (update pet status and delete adoption request)
           try {
             await axiosSecure.patch(`/pet-reject/${petId}`, { adopted: false });
             await axiosSecure.delete(`/adoptions/${adoptionId}`);

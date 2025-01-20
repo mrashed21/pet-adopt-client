@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { Button, Typography } from "@material-tailwind/react";
 import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
@@ -9,9 +10,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import useAxiosSecure from "../../../../Hooks/UseAxiosSecure/useAxiosSecure";
 import DonationModal from "../../DonMod/DonMod";
 
-const stripePromise = loadStripe(
-  "pk_test_51Qj2fcLajU602OADcGNs4ghcmSV5jgk2t4lNpivlZG8b6eFXXuyeuc9YQe65FLQI1pv24UDNK2QIJuxWQBC21vDB00Jf55j8qO"
-);
+const stripePromise = loadStripe(`${import.meta.env.VITE_Stripe_Key}`);
 
 const DonationDetails = () => {
   const { id } = useParams();

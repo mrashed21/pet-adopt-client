@@ -38,10 +38,14 @@ const AddPetForm = () => {
       setUploading(true);
       const formData = new FormData();
       formData.append("file", file);
-      formData.append("upload_preset", "pet_adopt");
+      formData.append(
+        "upload_preset",
+        `${import.meta.env.VITE_CLOUDINARY_PRESET}`
+      );
       const { data } = await axios.post(
-        import.meta.env.VITE_CLOUDINARY_UPLOAD_URL,
-
+        `https://api.cloudinary.com/v1_1/${
+          import.meta.env.VITE_CLOUDINARY_NAME
+        }/image/upload`,
         formData
       );
       return data.secure_url;
@@ -52,7 +56,6 @@ const AddPetForm = () => {
       setUploading(false);
     }
   };
-  console.log(import.meta.env.VITE_CLOUDINARY_UPLOAD_URL);
   const validationSchema = Yup.object({
     petName: Yup.string().required("Pet name is required"),
     petAge: Yup.string()

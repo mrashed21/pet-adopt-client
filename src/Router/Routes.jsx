@@ -10,6 +10,8 @@ import AddPetForm from "../Page/AddPetFrom/AddPetFrom";
 import AddDonation from "../Page/Donation/AddDonation/AddDonation";
 import DonationDetails from "../Page/Donation/DonationCard/DonationDetails/DonationDetails";
 import DonationPage from "../Page/Donation/DonationPage/DonationPage";
+import MyCompain from "../Page/Donation/MyCompain/MyCompain";
+import UpdateDonation from "../Page/Donation/UpdateDonation/UpdateDonation";
 import Home from "../Page/Home/Home/Home";
 import MyAdded from "../Page/MyAdded/MyAdded";
 import PetListing from "../Page/PetListing/PetContainer/PetListing";
@@ -17,7 +19,6 @@ import PetDetails from "../Page/PetListing/PetDetails/PetDetails";
 import UpdatePet from "../Page/UpdatePet/UpdatePet";
 import UserProfile from "../Page/UserProfile/UserProfile";
 import PrivateRoute from "./PrivateRoute";
-import MyCompain from "../Page/Donation/MyCompain/MyCompain";
 
 const Routes = createBrowserRouter([
   {
@@ -105,10 +106,18 @@ const Routes = createBrowserRouter([
         ),
       },
       {
+        path: "/dashboard/edit-donation/:id",
+        element: (
+          <PrivateRoute>
+            <UpdateDonation />
+          </PrivateRoute>
+        ),
+      },
+      {
         path: "my-compain",
         element: (
           <PrivateRoute>
-            <MyCompain/>
+            <MyCompain />
           </PrivateRoute>
         ),
       },

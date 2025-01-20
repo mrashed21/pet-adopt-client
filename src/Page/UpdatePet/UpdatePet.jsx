@@ -49,8 +49,6 @@ const UpdatePet = () => {
       [name]: type === "number" ? parseInt(value, 10) || 0 : value,
     }));
   };
-
-  // Handle image file change
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -58,16 +56,12 @@ const UpdatePet = () => {
       setImagePreview(URL.createObjectURL(file));
     }
   };
-
-  // Handle category change with react-select
   const handleCategoryChange = (selectedOption) => {
     setPet((prev) => ({
       ...prev,
       category: selectedOption ? selectedOption.value : "",
     }));
   };
-
-  // Validate form data
   const validateForm = () => {
     if (!pet.name?.trim()) return "Pet name is required";
     if (pet.age < 0) return "Age cannot be negative";
@@ -83,7 +77,6 @@ const UpdatePet = () => {
     return null;
   };
 
-  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -102,9 +95,11 @@ const UpdatePet = () => {
       try {
         const formData = new FormData();
         formData.append("file", imageFile);
-        formData.append("upload_preset", "pet_adopt");
+        formData.append("upload_preset",  `${import.meta.env.VITE_CLOUDINARY_PRESET}`);
         const uploadResponse = await axios.post(
-          "https://api.cloudinary.com/v1_1/dablesuiy/image/upload",
+         `https://api.cloudinary.com/v1_1/${
+          import.meta.env.VITE_CLOUDINARY_NAME
+        }/image/upload`,
           formData
         );
         imageUrl = uploadResponse.data.secure_url;
@@ -114,8 +109,6 @@ const UpdatePet = () => {
         return;
       }
     }
-
-    // Update the pet data in the database
     const { _id, ...petData } = pet;
     try {
       const response = await axiosSecure.put(`/pets/${id}`, {

@@ -1,4 +1,5 @@
 import { useContext, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../../../Context/Auth/AuthProvider";
 import useAxiosSecure from "../../../Hooks/UseAxiosSecure/useAxiosSecure";
 
@@ -9,6 +10,7 @@ const MyDonations = () => {
   const [showModal, setShowModal] = useState(false);
   const { user } = useContext(AuthContext);
   const axiosSecure = useAxiosSecure();
+  const navigate = useNavigate();
   useEffect(() => {
     fetchDonations();
   }, []);
@@ -48,7 +50,7 @@ const MyDonations = () => {
   };
 
   const handleEdit = (id) => {
-    window.location.href = `/edit-donation/${id}`;
+    navigate(`/dashboard/edit-donation/${id}`);
   };
 
   if (loading) return <div>Loading...</div>;

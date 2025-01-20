@@ -17,8 +17,6 @@ const Register = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const redirectTo = location.state?.from?.pathname || "/";
-
-  // Validation schema using Yup
   const validationSchema = Yup.object({
     name: Yup.string().required("Name is required"),
     email: Yup.string()
@@ -36,21 +34,21 @@ const Register = () => {
 
   const onSubmit = async (values, { setSubmitting }) => {
     const { name, email, password, profile } = values;
-
-    try {
-      // Upload image to Cloudinary
+  try {
       const formData = new FormData();
       formData.append("file", profile);
-      formData.append("upload_preset", "pet_adopt");
+      formData.append(
+        "upload_preset",
+        `${import.meta.env.VITE_CLOUDINARY_PRESET}`
+      );
       const cloudinaryResponse = await axios.post(
-        "https://api.cloudinary.com/v1_1/dablesuiy/image/upload",
+        `https://api.cloudinary.com/v1_1/${
+          import.meta.env.VITE_CLOUDINARY_NAME
+        }/image/upload`,
         formData
       );
       const profileImageUrl = cloudinaryResponse.data.secure_url;
-
-      // Register user with all information at once
       await handleRegister(email, password, name, profileImageUrl);
-
       toast.success("Registration successful!");
       navigate(redirectTo);
     } catch (error) {

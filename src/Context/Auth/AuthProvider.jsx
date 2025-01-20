@@ -1,6 +1,6 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable react/prop-types */
 
-import axios from "axios";
 import {
   createUserWithEmailAndPassword,
   GithubAuthProvider,
@@ -161,14 +161,14 @@ const AuthProvider = ({ children }) => {
       setLoading(false);
       setUser(currentUser);
       if (currentUser?.email) {
-        axios.post(
-          "http://localhost:5000/jwt",
+        axiosSecure.post(
+          "/jwt",
           { email: currentUser?.email },
           { withCredentials: true }
         );
       } else {
-        axios.post(
-          "http://localhost:5000/logout",
+        axiosSecure.post(
+          "/logout",
           {},
           {
             withCredentials: true,
