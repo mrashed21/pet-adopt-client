@@ -1,6 +1,5 @@
-
 import { Button, Card, CardBody, Typography } from "@material-tailwind/react";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useContext } from "react";
 import Swal from "sweetalert2";
 import { AuthContext } from "../../../Context/Auth/AuthProvider";
@@ -14,11 +13,10 @@ const TABLE_HEAD = [
   "Actions",
 ];
 
-const ReceiveRequest = () => {
+const SendRequest = () => {
   const { user } = useContext(AuthContext);
   const axiosSecure = useAxiosSecure();
   const queryClient = useQueryClient();
-
   const {
     data: adoptions = [],
     isLoading,
@@ -33,29 +31,7 @@ const ReceiveRequest = () => {
     enabled: !!user?.email,
   });
 
-  const deleteAdoptionRequest = useMutation({
-    mutationFn: async (adoptionId) => {
-      const response = await axiosSecure.delete(`/adoptions/${adoptionId}`);
-      return response.data;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries(["adoptions", user?.email]);
-      Swal.fire(
-        "Deleted!",
-        "The adoption request has been deleted.",
-        "success"
-      );
-    },
-    onError: (error) => {
-      Swal.fire(
-        "Error!",
-        error.response?.data?.message || "Failed to delete request.",
-        "error"
-      );
-    },
-  });
-
-  const handleReject = (adoptionId) => {
+  const handleReject = (adoptionId, petId) => {
     Swal.fire({
       title: "Are you sure?",
       text: "You won't be able to undo this!",
@@ -63,22 +39,47 @@ const ReceiveRequest = () => {
       showCancelButton: true,
       confirmButtonColor: "#d33",
       cancelButtonColor: "#3085d6",
-      confirmButtonText: "Yes, reject it!",
-    }).then((result) => {
+      confirmButtonText: "Yes, Reject it!",
+    }).then(async (result) => {
       if (result.isConfirmed) {
-        deleteAdoptionRequest.mutate(adoptionId);
+        try {
+          await axiosSecure.patch(`/pet-reject/${petId}`, { adopted: false });
+          await axiosSecure.delete(`/adoptions/${adoptionId}`);
+          queryClient.invalidateQueries(["adoptions", user?.email]);
+          Swal.fire(
+            "Rejected!",
+            "The adoption request has been rejected.",
+            "success"
+          );
+        } catch (error) {
+          Swal.fire(
+            "Error!",
+            error.response?.data?.message || "Failed to process the rejection.",
+            "error"
+          );
+        }
       }
     });
   };
-
   if (isLoading) {
     return (
       <div className="container mx-auto px-4 py-8">
         <Typography variant="h6">Loading adoption requests...</Typography>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+          {Array.from({ length: 6 }).map((_, index) => (
+            <div
+              key={index}
+              className="p-4 rounded-lg bg-gray-200 animate-pulse"
+            >
+              <div className="h-16 w-full mb-4 bg-gray-300 rounded"></div>
+              <div className="h-4 w-3/4 mb-2 bg-gray-300 rounded"></div>
+              <div className="h-4 w-1/2 bg-gray-300 rounded"></div>
+            </div>
+          ))}
+        </div>
       </div>
     );
   }
-
   if (isError) {
     return (
       <div className="container mx-auto px-4 py-8">
@@ -88,7 +89,6 @@ const ReceiveRequest = () => {
       </div>
     );
   }
-
   if (!adoptions.length) {
     return (
       <div className="container mx-auto px-4 py-8">
@@ -96,7 +96,6 @@ const ReceiveRequest = () => {
       </div>
     );
   }
-
   return (
     <div className="container mx-auto px-4 py-8">
       <Card className="h-full w-full">
@@ -167,7 +166,9 @@ const ReceiveRequest = () => {
                         <Button
                           color="red"
                           size="sm"
-                          onClick={() => handleReject(adoption._id)}
+                          onClick={() =>
+                            handleReject(adoption._id, adoption.petId)
+                          }
                           disabled={adoption.status !== "pending"}
                         >
                           Reject
@@ -185,4 +186,4 @@ const ReceiveRequest = () => {
   );
 };
 
-export default ReceiveRequest;
+export default SendRequest;

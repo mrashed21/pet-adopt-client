@@ -1,6 +1,7 @@
 import { Button, Card, CardBody, Typography } from "@material-tailwind/react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useContext } from "react";
+import Swal from "sweetalert2";
 import { AuthContext } from "../../../Context/Auth/AuthProvider";
 import useAxiosSecure from "../../../Hooks/UseAxiosSecure/useAxiosSecure";
 
@@ -48,13 +49,60 @@ const ReceiveRequest = () => {
     },
   });
 
-  const handleAction = (adoptionId, status) => {
-    const confirmed = window.confirm(
-      `Are you sure you want to ${status} this request?`
-    );
-    if (confirmed) {
-      updateAdoptionRequest.mutate({ adoptionId, status });
-    }
+  const handleAction = (adoptionId, status, petId) => {
+    // Determine message for confirmation based on status
+    const actionMessage =
+      status === "accepted" ? "Accept this request?" : "Reject this request?";
+
+    Swal.fire({
+      title: `Are you sure you want to ${status}?`,
+      text: `You won't be able to undo this!`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: `Yes, ${status} it!`,
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        if (status === "accepted") {
+          // Update the adoption request status to accepted
+          try {
+            await updateAdoptionRequest.mutateAsync({ adoptionId, status });
+            Swal.fire(
+              "Accepted!",
+              "The adoption request has been accepted.",
+              "success"
+            );
+          } catch (error) {
+            Swal.fire(
+              "Error!",
+              error.response?.data?.message ||
+                "Failed to process the acceptance.",
+              "error"
+            );
+          }
+        } else if (status === "rejected") {
+          // Handle rejection (update pet status and delete adoption request)
+          try {
+            await axiosSecure.patch(`/pet-reject/${petId}`, { adopted: false });
+            await axiosSecure.delete(`/adoptions/${adoptionId}`);
+            queryClient.invalidateQueries(["adoptions", user?.email]);
+            Swal.fire(
+              "Rejected!",
+              "The adoption request has been rejected.",
+              "success"
+            );
+          } catch (error) {
+            Swal.fire(
+              "Error!",
+              error.response?.data?.message ||
+                "Failed to process the rejection.",
+              "error"
+            );
+          }
+        }
+      }
+    });
   };
 
   if (isLoading) {
@@ -159,7 +207,13 @@ const ReceiveRequest = () => {
                         <Button
                           color="green"
                           size="sm"
-                          onClick={() => handleAction(adoption._id, "accepted")}
+                          onClick={() =>
+                            handleAction(
+                              adoption._id,
+                              "accepted",
+                              adoption.petId
+                            )
+                          }
                           disabled={adoption.status !== "pending"}
                         >
                           Accept
@@ -167,7 +221,13 @@ const ReceiveRequest = () => {
                         <Button
                           color="red"
                           size="sm"
-                          onClick={() => handleAction(adoption._id, "rejected")}
+                          onClick={() =>
+                            handleAction(
+                              adoption._id,
+                              "rejected",
+                              adoption.petId
+                            )
+                          }
                           disabled={adoption.status !== "pending"}
                         >
                           Reject
