@@ -71,8 +71,8 @@ const PetListing = () => {
             Array.from({ length: 9 }).map((_, index) => (
               <SkeletonCard key={index} />
             ))
-          : data?.pages.flatMap((page) =>
-              page.pets.map((pet) => <PetCard key={pet._id} pet={pet} />)
+          : data?.pages?.flatMap((page) =>
+              page?.pets?.map((pet) => <PetCard key={pet._id} pet={pet} />)
             )}
       </div>
 

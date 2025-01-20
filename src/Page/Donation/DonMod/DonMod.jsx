@@ -1,9 +1,14 @@
 /* eslint-disable react/prop-types */
-import { useState } from "react";
-import { useStripe, useElements, CardElement } from "@stripe/react-stripe-js";
 import { Button } from "@material-tailwind/react";
+import { CardElement, useElements, useStripe } from "@stripe/react-stripe-js";
+import { useContext, useState } from "react";
+import Swal from "sweetalert2";
+import { AuthContext } from "../../../Context/Auth/AuthProvider";
+import useAxiosSecure from "../../../Hooks/UseAxiosSecure/useAxiosSecure";
 
 const DonationModal = ({ donationId, onClose }) => {
+  const axiosSecure = useAxiosSecure();
+  const { user } = useContext(AuthContext);
   const stripe = useStripe();
   const elements = useElements();
   const [amount, setAmount] = useState("");
@@ -12,44 +17,41 @@ const DonationModal = ({ donationId, onClose }) => {
 
   const handleDonation = async () => {
     if (!stripe || !elements) return;
-
     setLoading(true);
     setError(null);
-
     try {
       const cardElement = elements.getElement(CardElement);
       const paymentMethod = await stripe.createPaymentMethod({
         type: "card",
         card: cardElement,
       });
-
       if (paymentMethod.error) {
         setError(paymentMethod.error.message);
         setLoading(false);
         return;
       }
-
-      const response = await fetch(`http://localhost:5000/donations/${donationId}/donate`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
+      const response = await axiosSecure.post(
+        `/donations/${donationId}/donate`,
+        {
           amount: parseFloat(amount),
           paymentMethodId: paymentMethod.paymentMethod.id,
-        }),
-      });
-
-      const result = await response.json();
-
-      if (!response.ok) {
-        throw new Error(result.message || "Failed to process donation");
+          donorEmail: user?.email || "guest@example.com",
+          donorName: user?.displayName || "Guest",
+        }
+      );
+      if (response.status !== 200) {
+        throw new Error(response.data.message || "Failed to process donation");
       }
-
-      alert("Donation successful!");
+      Swal.fire({
+        title: "Donation successful!",
+        icon: "success",
+        confirmButtonText: "Okay",
+      });
       onClose();
     } catch (err) {
-      setError(err.message || "An error occurred");
+      setError(
+        err.response?.data?.message || err.message || "An error occurred"
+      );
     } finally {
       setLoading(false);
     }

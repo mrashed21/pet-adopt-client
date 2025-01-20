@@ -1,24 +1,22 @@
-
-import axios from "axios";
-import  { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
+import { AuthContext } from "../../../Context/Auth/AuthProvider";
+import useAxiosSecure from "../../../Hooks/UseAxiosSecure/useAxiosSecure";
 
 const MyDonations = () => {
   const [donations, setDonations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedDonators, setSelectedDonators] = useState(null);
   const [showModal, setShowModal] = useState(false);
-
-  const userEmail = "rashedjaman768@gmail.com"; // Replace with logged-in user's email
-
+  const { user } = useContext(AuthContext);
+  const axiosSecure = useAxiosSecure();
   useEffect(() => {
     fetchDonations();
   }, []);
 
-  // Fetch donations by user email
   const fetchDonations = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(`http://localhost:5000/donations/user/${userEmail}`);
+      const response = await axiosSecure.get(`/donations/user/${user.email}`);
       setDonations(response.data);
     } catch (error) {
       console.error("Error fetching donations:", error.message);
@@ -30,17 +28,18 @@ const MyDonations = () => {
   // Toggle pause/unpause donation
   const handlePauseToggle = async (id, paused) => {
     try {
-      await axios.patch(`http://localhost:5000/donations/pause/${id}`, { paused: !paused });
-      fetchDonations(); // Refresh data after toggling
+      await axiosSecure.patch(`/donations/pause/${id}`, {
+        paused: !paused,
+      });
+      fetchDonations();
     } catch (error) {
       console.error("Error updating pause state:", error.message);
     }
   };
 
-  // Fetch and view donators for a donation
   const handleViewDonators = async (id) => {
     try {
-      const response = await axios.get(`http://localhost:5000/donations/donators/${id}`);
+      const response = await axiosSecure.get(`/donations/donators/${id}`);
       setSelectedDonators(response.data);
       setShowModal(true);
     } catch (error) {
@@ -48,9 +47,8 @@ const MyDonations = () => {
     }
   };
 
-  // Redirect to the edit page
   const handleEdit = (id) => {
-    window.location.href = `/edit-donation/${id}`; // Update with your routing logic
+    window.location.href = `/edit-donation/${id}`;
   };
 
   if (loading) return <div>Loading...</div>;
