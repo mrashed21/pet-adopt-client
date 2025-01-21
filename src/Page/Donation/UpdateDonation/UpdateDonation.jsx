@@ -8,130 +8,102 @@ import {
 } from "@material-tailwind/react";
 import axios from "axios";
 import { useFormik } from "formik";
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import Swal from "sweetalert2";
 import * as Yup from "yup";
-import { AuthContext } from "../../../Context/Auth/AuthProvider";
 import useAxiosSecure from "../../../Hooks/UseAxiosSecure/useAxiosSecure";
 
-// Validation Schema using Yup
-const validationSchema = Yup.object({
-  title: Yup.string()
-    .required("Valid campaign title is required")
-    .trim()
-    .min(5, "Title must be at least 5 characters")
-    .max(100, "Title must not exceed 100 characters"),
-  shortDescription: Yup.string()
-    .required("Short description is required")
-    .trim()
-    .min(10, "Must be at least 10 characters"),
-  longDescription: Yup.string()
-    .required("Long description is required")
-    .min(20, "Must be at least 20 characters"),
-  goalAmount: Yup.number()
-    .required("Donation goal amount is required")
-    .min(1, "Goal amount must be greater than 0"),
-  lastDate: Yup.date()
-    .required("Last donation date is required")
-    .min(new Date(), "Last donation date cannot be in the past"),
-  petPicture: Yup.mixed().test(
-    "file",
-    "A pet picture is required if no current image exists",
-    function (value) {
-      const { parent } = this;
-      return parent.imageUrl || value instanceof File;
-    }
-  ),
-});
-
 const UpdateDonation = () => {
-  const { id } = useParams();
   const [uploading, setUploading] = useState(false);
-  const [donationData, setDonationData] = useState(null);
-  const [petPicture, setPetPicture] = useState(null);
+  const [loading, setLoading] = useState(true);
   const axiosSecure = useAxiosSecure();
-  const { user } = useContext(AuthContext);
-  useEffect(() => {
-    const fetchDonation = async () => {
-      try {
-        const { data } = await axiosSecure.get(`/donations/${id}`);
-        setDonationData(data);
-      } catch (error) {
-        console.error("Error fetching donation campaign data:", error);
-        Swal.fire({
-          title: "Error fetching donation data.",
-          icon: "error",
-          draggable: true,
-        });
-      }
-    };
+  const { id } = useParams();
+  const navigate = useNavigate();
 
-    fetchDonation();
-  }, [id, axiosSecure]);
+  const validationSchema = Yup.object({
+    title: Yup.string()
+      .required("Valid campaign title is required")
+      .trim()
+      .min(5, "Title must be at least 5 characters")
+      .max(100, "Title must not exceed 100 characters"),
+    shortDescription: Yup.string()
+      .required("Short description is required")
+      .trim()
+      .min(10, "Must be at least 10 characters"),
+    longDescription: Yup.string()
+      .required("Long description is required")
+      .min(20, "Must be at least 20 characters"),
+    goalAmount: Yup.number()
+      .required("Donation goal amount is required")
+      .min(1, "Goal amount must be greater than 0"),
+    lastDate: Yup.date()
+      .required("Last donation date is required")
+      .min(new Date(), "Last donation date cannot be in the past"),
+  });
 
   const formik = useFormik({
     initialValues: {
-      title: donationData?.title || "",
-      shortDescription: donationData?.shortDescription || "",
-      longDescription: donationData?.longDescription || "",
-      goalAmount: donationData?.goalAmount || "",
-      lastDate: donationData?.lastDate || "",
+      title: "",
+      shortDescription: "",
+      longDescription: "",
+      goalAmount: "",
+      lastDate: "",
       petPicture: null,
-      imageUrl: donationData?.imageUrl || "",
+      imageUrl: "",
     },
     validationSchema,
-    enableReinitialize: true,
-    onSubmit: async (values, { resetForm, setSubmitting }) => {
+    onSubmit: async (values, { setSubmitting }) => {
       try {
         setUploading(true);
-        let imageUrl = values.imageUrl;
-        if (petPicture) {
+        let finalImageUrl = values.imageUrl;
+        if (values.petPicture) {
           const formData = new FormData();
-          formData.append("file", petPicture);
+          formData.append("file", values.petPicture);
           formData.append(
             "upload_preset",
             `${import.meta.env.VITE_CLOUDINARY_PRESET}`
           );
-
           const { data: uploadData } = await axios.post(
             `https://api.cloudinary.com/v1_1/${
               import.meta.env.VITE_CLOUDINARY_NAME
             }/image/upload`,
             formData
           );
-
-          if (uploadData?.secure_url) {
-            imageUrl = uploadData.secure_url;
+          if (!uploadData.secure_url) {
+            throw new Error("Image upload failed");
           }
+          finalImageUrl = uploadData.secure_url;
         }
+
         const campaignData = {
           title: values.title.trim(),
           shortDescription: values.shortDescription.trim(),
           longDescription: values.longDescription.trim(),
           goalAmount: Number(values.goalAmount),
+          imageUrl: finalImageUrl,
           lastDate: values.lastDate,
-          imageUrl,
-          userEmail: user?.email,
           updatedAt: new Date().toISOString(),
         };
 
-        await axiosSecure.put(`/donations/update/${id}`, campaignData);
+        await axiosSecure.patch(`/donations/update/${id}`, campaignData);
+
         Swal.fire({
           title: "Donation campaign updated successfully!",
           icon: "success",
           draggable: true,
         });
 
-        resetForm();
+        navigate("/dashboard/my-compain");
       } catch (error) {
         console.error("Error updating donation campaign:", error);
         Swal.fire({
-          title: "Error updating donation campaign.",
+          title: "Error!",
+          text:
+            error.response?.data?.message || "Failed to update the campaign",
           icon: "error",
-          draggable: true,
         });
       } finally {
         setUploading(false);
@@ -140,7 +112,39 @@ const UpdateDonation = () => {
     },
   });
 
-  if (!donationData) return <p>Loading...</p>;
+  useEffect(() => {
+    const fetchDonation = async () => {
+      try {
+        const response = await axiosSecure.get(`/donations/${id}`);
+        const donation = response.data;
+
+        formik.setValues({
+          title: donation.title,
+          shortDescription: donation.shortDescription,
+          longDescription: donation.longDescription,
+          goalAmount: donation.goalAmount,
+          lastDate: donation.lastDate,
+          imageUrl: donation.imageUrl,
+          petPicture: null,
+        });
+      } catch (error) {
+        console.error("Error fetching donation:", error);
+        Swal.fire({
+          title: "Error!",
+          text: "Failed to fetch donation details",
+          icon: "error",
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDonation();
+  }, [id]);
+
+  if (loading) {
+    return <div className="text-center py-8">Loading...</div>;
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
@@ -155,7 +159,6 @@ const UpdateDonation = () => {
           </Typography>
 
           <form onSubmit={formik.handleSubmit} className="space-y-6">
-            {/* Campaign Title */}
             <div>
               <Typography variant="h6" color="blue-gray" className="mb-2">
                 Campaign Title
@@ -175,7 +178,6 @@ const UpdateDonation = () => {
               )}
             </div>
 
-            {/* Short Description */}
             <div>
               <Typography variant="h6" color="blue-gray" className="mb-2">
                 Short Description
@@ -199,7 +201,6 @@ const UpdateDonation = () => {
                 )}
             </div>
 
-            {/* Long Description */}
             <div className="pb-7">
               <Typography variant="h6" color="blue-gray" className="mb-2">
                 Long Description
@@ -220,7 +221,6 @@ const UpdateDonation = () => {
                 )}
             </div>
 
-            {/* Goal Amount */}
             <div>
               <Typography variant="h6" color="blue-gray" className="mb-2">
                 Goal Amount ($)
@@ -240,7 +240,6 @@ const UpdateDonation = () => {
               )}
             </div>
 
-            {/* Last Date */}
             <div>
               <Typography variant="h6" color="blue-gray" className="mb-2">
                 Last Date
@@ -260,45 +259,46 @@ const UpdateDonation = () => {
               )}
             </div>
 
-            {/* Pet Picture */}
             <div>
               <Typography variant="h6" color="blue-gray" className="mb-2">
-                Pet Picture
+                Current Image
+              </Typography>
+              <img
+                src={formik.values.imageUrl}
+                alt="Current pet"
+                className="w-32 h-32 object-cover rounded-lg mb-4"
+              />
+
+              <Typography variant="h6" color="blue-gray" className="mb-2">
+                Update Pet Picture
               </Typography>
               <Input
                 type="file"
                 name="petPicture"
                 onChange={(event) => {
-                  setPetPicture(event.currentTarget.files[0]);
+                  formik.setFieldValue(
+                    "petPicture",
+                    event.currentTarget.files[0]
+                  );
                 }}
                 accept="image/*"
-                error={formik.touched.petPicture && formik.errors.petPicture}
               />
-              {formik.touched.petPicture && formik.errors.petPicture && (
-                <Typography color="red" className="mt-1 text-sm">
-                  {formik.errors.petPicture}
-                </Typography>
-              )}
-              {formik.values.imageUrl && (
-                <img
-                  src={formik.values.imageUrl}
-                  alt="Current Pet"
-                  className="mt-4 h-40 rounded"
-                />
-              )}
             </div>
+
+            <CardFooter className="pt-6">
+              <Button
+                type="submit"
+                fullWidth
+                disabled={formik.isSubmitting || uploading}
+                className="bg-blue-500"
+              >
+                {formik.isSubmitting || uploading
+                  ? "Updating..."
+                  : "Update Campaign"}
+              </Button>
+            </CardFooter>
           </form>
         </CardBody>
-        <CardFooter className="pt-4">
-          <Button
-            type="submit"
-            onClick={formik.handleSubmit}
-            fullWidth
-            disabled={uploading}
-          >
-            {uploading ? "Updating..." : "Update Campaign"}
-          </Button>
-        </CardFooter>
       </Card>
     </div>
   );
