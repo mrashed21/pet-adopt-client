@@ -10,9 +10,10 @@ import {
 } from "react-icons/fa";
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import { AuthContext } from "../Context/Auth/AuthProvider";
+import Admin from "../Page/Admin/Admin";
 
 const Dashboard = () => {
-  const { user, logOut } = useContext(AuthContext);
+  const { user, logOut, role } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const handleLogout = async () => {
@@ -157,6 +158,11 @@ const Dashboard = () => {
               My Donations
             </NavLink>
           </div>
+          {role === "admin" && (
+            <>
+              <Admin/>
+            </>
+          )}
         </aside>
 
         {/* Main Dashboard Content */}

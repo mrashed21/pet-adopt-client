@@ -23,7 +23,7 @@ export const AuthContext = createContext();
 const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-
+  const [role, setRole] = useState(null);
   const axiosSecure = useAxiosSecure();
 
   const handleRegister = async (email, password, name, photoURL) => {
@@ -180,7 +180,6 @@ const AuthProvider = ({ children }) => {
           email: currentUser.email,
           name: currentUser.displayName || "",
           photoURL: currentUser.photoURL || "",
-          role: "user",
         });
       } catch (error) {
         console.error("Error saving user info to the database:", error);
@@ -191,7 +190,18 @@ const AuthProvider = ({ children }) => {
       unSubscribe();
     };
   }, [axiosSecure]);
-
+  useEffect(() => {
+    if (user?.email) {
+      axiosSecure
+        .get(`/users/${user.email}`)
+        .then((res) => {
+          setRole(res.data.role); // Set the user's role
+        })
+        .catch((error) => {
+          console.error("Error fetching user role:", error);
+        });
+    }
+  }, [user, axiosSecure]);
   const authInfo = {
     handleRegister,
     handleLogin,
@@ -205,6 +215,7 @@ const AuthProvider = ({ children }) => {
     setLoading,
     updateUserProfile,
     handleLoginGithub,
+    role,
   };
 
   return (
