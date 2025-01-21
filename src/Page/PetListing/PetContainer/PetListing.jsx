@@ -67,8 +67,7 @@ const PetListing = () => {
       {/* Pets Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {isFetching && !data
-          ? // Show Skeletons while fetching initial data
-            Array.from({ length: 9 }).map((_, index) => (
+          ? Array.from({ length: 9 }).map((_, index) => (
               <SkeletonCard key={index} />
             ))
           : data?.pages?.flatMap((page) =>
@@ -78,11 +77,10 @@ const PetListing = () => {
 
       {/* Infinite Scroll Indicator */}
       <div ref={ref} className="h-10 flex justify-center items-center">
-        {isFetchingNextPage
-          ? "Loading more pets..."
-          : hasNextPage
-          ? "Scroll to load more"
-          : "No more pets"}
+        {isFetchingNextPage &&
+          Array.from({ length: 9 }).map((_, index) => (
+            <SkeletonCard key={index} />
+          ))}
       </div>
     </div>
   );

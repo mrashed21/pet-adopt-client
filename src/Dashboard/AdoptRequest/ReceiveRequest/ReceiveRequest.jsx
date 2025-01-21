@@ -5,6 +5,7 @@ import { useContext } from "react";
 import Swal from "sweetalert2";
 import { AuthContext } from "../../../Context/Auth/AuthProvider";
 import useAxiosSecure from "../../../Hooks/UseAxiosSecure/useAxiosSecure";
+import TableSkeleton from "../../../Common/TaboleSkeleton/TableSkeleton";
 
 const TABLE_HEAD = [
   "Pet Name",
@@ -106,7 +107,7 @@ const ReceiveRequest = () => {
   if (isLoading) {
     return (
       <div className="container mx-auto px-4 py-8">
-        <Typography variant="h6">Loading adoption requests...</Typography>
+        <TableSkeleton/>
       </div>
     );
   }
@@ -187,7 +188,7 @@ const ReceiveRequest = () => {
                     <td className="p-4">
                       <div
                         className={`
-                        px-2 py-1 rounded-full text-xs font-semibold inline-block
+                        px-2 py-1 rounded-full text-xs font-semibold inline-block capitalize
                         ${
                           adoption.status === "accepted"
                             ? "bg-green-100 text-green-800"

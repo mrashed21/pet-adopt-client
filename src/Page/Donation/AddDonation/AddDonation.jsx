@@ -50,7 +50,7 @@ const AddDonation = () => {
       shortDescription: "",
       longDescription: "",
       goalAmount: "",
-      lastDate: "",
+      lastDate: new Date().toISOString().split("T")[0],
       petPicture: null,
     },
     validationSchema,
@@ -80,6 +80,7 @@ const AddDonation = () => {
           imageUrl: uploadData.secure_url,
           userEmail: user?.email,
           createdAt: new Date().toISOString(),
+          lastDate: values.lastDate, 
         };
         console.log(campaignData);
         await axiosSecure.post("/donations/add", campaignData);

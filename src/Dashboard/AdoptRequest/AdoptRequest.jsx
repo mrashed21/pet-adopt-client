@@ -7,15 +7,15 @@ const AdoptRequest = () => {
     <div>
       <Tabs>
         <TabList>
-          <Tab>Send</Tab>
           <Tab>Receive</Tab>
+          <Tab>Send</Tab>
         </TabList>
 
         <TabPanel>
-          <SendRequest />
+          <ReceiveRequest />
         </TabPanel>
         <TabPanel>
-          <ReceiveRequest />
+          <SendRequest />
         </TabPanel>
       </Tabs>
     </div>

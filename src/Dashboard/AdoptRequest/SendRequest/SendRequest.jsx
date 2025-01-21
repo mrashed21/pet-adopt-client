@@ -2,6 +2,7 @@ import { Button, Card, CardBody, Typography } from "@material-tailwind/react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useContext } from "react";
 import Swal from "sweetalert2";
+import TableSkeleton from "../../../Common/TaboleSkeleton/TableSkeleton";
 import { AuthContext } from "../../../Context/Auth/AuthProvider";
 import useAxiosSecure from "../../../Hooks/UseAxiosSecure/useAxiosSecure";
 
@@ -64,19 +65,7 @@ const SendRequest = () => {
   if (isLoading) {
     return (
       <div className="container mx-auto px-4 py-8">
-        <Typography variant="h6">Loading adoption requests...</Typography>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
-          {Array.from({ length: 6 }).map((_, index) => (
-            <div
-              key={index}
-              className="p-4 rounded-lg bg-gray-200 animate-pulse"
-            >
-              <div className="h-16 w-full mb-4 bg-gray-300 rounded"></div>
-              <div className="h-4 w-3/4 mb-2 bg-gray-300 rounded"></div>
-              <div className="h-4 w-1/2 bg-gray-300 rounded"></div>
-            </div>
-          ))}
-        </div>
+        <TableSkeleton />
       </div>
     );
   }
@@ -149,7 +138,7 @@ const SendRequest = () => {
                     {/* Status */}
                     <td className="p-4">
                       <div
-                        className={`px-2 py-1 rounded-full text-xs font-semibold inline-block ${
+                        className={`px-2 py-1 rounded-full text-xs font-semibold inline-block capitalize ${
                           adoption.status === "accepted"
                             ? "bg-green-100 text-green-800"
                             : adoption.status === "rejected"
