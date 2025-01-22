@@ -207,8 +207,22 @@ const PetDetails = () => {
                 className="capitalize w-fit"
               />
             </div>
-            <Button
+            {/* <Button
               onClick={() => setShowModal(true)}
+              disabled={pet.adopted}
+              color={pet.adopted ? "gray" : "blue"}
+              size="lg"
+            >
+              {pet.adopted ? "Pending" : "Adopt Now"}
+            </Button> */}
+            <Button
+              onClick={() => {
+                if (user) {
+                  setShowModal(true);
+                } else {
+                  navigate("/login");
+                }
+              }}
               disabled={pet.adopted}
               color={pet.adopted ? "gray" : "blue"}
               size="lg"

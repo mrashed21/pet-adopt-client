@@ -7,16 +7,17 @@ import {
 } from "@tanstack/react-table";
 import axios from "axios";
 import { useEffect, useMemo, useState } from "react";
+import useAxiosPublic from "../../../Hooks/PublikAxios/PublicAxios";
 
 const AllUser = () => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
-
+  const axiosPublic = useAxiosPublic();
   // Fetch users from the API
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/admin/users");
+        const response = await axiosPublic.get("/admin/users");
         setUsers(response.data);
       } catch (error) {
         console.error("Error fetching users:", error);
@@ -92,7 +93,7 @@ const AllUser = () => {
     ],
     []
   );
-  
+
   const updateRole = async (userId, role) => {
     try {
       await axios.put(`http://localhost:5000/admin/users/${userId}`, { role });
@@ -110,7 +111,6 @@ const AllUser = () => {
       console.error("Error updating role:", error);
     }
   };
-  
 
   // Create table instance
   const table = useReactTable({

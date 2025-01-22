@@ -3,12 +3,13 @@ import { Button, Card, CardBody, Typography } from "@material-tailwind/react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useContext } from "react";
 import Swal from "sweetalert2";
+import TableSkeleton from "../../../Common/TaboleSkeleton/TableSkeleton";
 import { AuthContext } from "../../../Context/Auth/AuthProvider";
 import useAxiosSecure from "../../../Hooks/UseAxiosSecure/useAxiosSecure";
-import TableSkeleton from "../../../Common/TaboleSkeleton/TableSkeleton";
 
 const TABLE_HEAD = [
   "Pet Name",
+  "Image",
   "Requester Name",
   "Email",
   "Phone",
@@ -107,7 +108,7 @@ const ReceiveRequest = () => {
   if (isLoading) {
     return (
       <div className="container mx-auto px-4 py-8">
-        <TableSkeleton/>
+        <TableSkeleton />
       </div>
     );
   }
@@ -124,8 +125,8 @@ const ReceiveRequest = () => {
 
   if (!adoptions.length) {
     return (
-      <div className="container mx-auto px-4 py-8">
-        <Typography variant="h6">No adoption requests found.</Typography>
+      <div className="container mx-auto mt-20">
+        <Typography variant="h6" className="text-center">No Information found.</Typography>
       </div>
     );
   }
@@ -165,6 +166,14 @@ const ReceiveRequest = () => {
                         {adoption.petName}
                       </Typography>
                     </td>
+                    <td className="p-4">
+                      <img
+                        className="w-16 h-16 rounded-md "
+                        src={adoption.petImage}
+                        alt=""
+                      />
+                    </td>
+
                     <td className="p-4">
                       <Typography variant="small" color="blue-gray">
                         {adoption.adopterName}

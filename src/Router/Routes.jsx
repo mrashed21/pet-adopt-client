@@ -7,6 +7,7 @@ import Dashboard from "../Dashboard/Dashboard";
 // import DashBoardHome from "../Dashboard/Home/DashBoardHome";
 import MainLayOut from "../Layout/MainLayOut";
 import AddPetForm from "../Page/AddPetFrom/AddPetFrom";
+import AdminDonation from "../Page/Admin/AdminDonation/AdminDonation";
 import AllUser from "../Page/Admin/AllUser/AllUser";
 import PetsTable from "../Page/Admin/AllUser/PetsTable/PetsTable";
 import AddDonation from "../Page/Donation/AddDonation/AddDonation";
@@ -22,7 +23,6 @@ import PetDetails from "../Page/PetListing/PetDetails/PetDetails";
 import UpdatePet from "../Page/UpdatePet/UpdatePet";
 import UserProfile from "../Page/UserProfile/UserProfile";
 import PrivateRoute from "./PrivateRoute";
-import AdminDonation from "../Page/Admin/AdminDonation/AdminDonation";
 
 const Routes = createBrowserRouter([
   {
@@ -38,20 +38,12 @@ const Routes = createBrowserRouter([
       { path: "/pet-listing", element: <PetListing /> },
       {
         path: "/pets/:id",
-        element: (
-          <PrivateRoute>
-            <PetDetails />
-          </PrivateRoute>
-        ),
+        element: <PetDetails />,
       },
       { path: "/donation", element: <DonationPage /> },
       {
         path: "/donations/:id",
-        element: (
-          <PrivateRoute>
-            <DonationDetails />
-          </PrivateRoute>
-        ),
+        element: <DonationDetails />,
       },
 
       { path: "/login", element: <Login /> },
@@ -68,14 +60,6 @@ const Routes = createBrowserRouter([
       </AuthProvider>
     ),
     children: [
-      // {
-      //   path: "dashboard",
-      //   element: (
-      //     <PrivateRoute>
-      //       <DashBoardHome />
-      //     </PrivateRoute>
-      //   ),
-      // },
       {
         index: true,
         path: "profile",

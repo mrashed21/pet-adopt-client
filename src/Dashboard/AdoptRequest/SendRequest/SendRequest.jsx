@@ -81,7 +81,9 @@ const SendRequest = () => {
   if (!adoptions.length) {
     return (
       <div className="container mx-auto px-4 py-8">
-        <Typography variant="h6">No adoption requests found.</Typography>
+        <Typography variant="h6" className="text-center">
+          No Information found.
+        </Typography>
       </div>
     );
   }

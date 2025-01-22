@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 /* eslint-disable react/prop-types */
 
 import {
@@ -15,7 +14,9 @@ import {
 import { createContext, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { auth } from "../../Firebase/firebase.config";
+
 import useAxiosSecure from "../../Hooks/UseAxiosSecure/useAxiosSecure";
+import { saveUser } from "../../utilites/utilite";
 
 // eslint-disable-next-line react-refresh/only-export-components
 export const AuthContext = createContext();
@@ -25,7 +26,6 @@ const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [role, setRole] = useState(null);
   const axiosSecure = useAxiosSecure();
-
   const handleRegister = async (email, password, name, photoURL) => {
     setLoading(true);
     try {
@@ -155,53 +155,34 @@ const AuthProvider = ({ children }) => {
     }
   };
 
-  // Monitor Auth State
+
+  // onAuthStateChange
   useEffect(() => {
-    const unSubscribe = onAuthStateChanged(auth, async (currentUser) => {
-      setLoading(false);
-      setUser(currentUser);
-      if (currentUser?.email) {
-        axiosSecure.post(
-          "/jwt",
-          { email: currentUser?.email },
-          { withCredentials: true }
-        );
-      } else {
-        axiosSecure.post(
-          "/logout",
-          {},
-          {
-            withCredentials: true,
-          }
-        );
-      }
-      try {
-        await axiosSecure.post("/users/add", {
-          email: currentUser.email,
-          name: currentUser.displayName || "",
-          photoURL: currentUser.photoURL || "",
+    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+      if (currentUser?.displayName) {
+        setUser(currentUser);
+
+        setLoading(false);
+
+        // Get JWT token
+        const result = await axiosSecure.post("/jwt", {
+          email: currentUser?.email,
         });
-      } catch (error) {
-        console.error("Error saving user info to the database:", error);
+        localStorage.setItem("token", result.data.token);
+        // save user information in the database if he is new
+        const userRole = await saveUser(currentUser);
+        setRole(userRole);
+      } else {
+        setUser(currentUser);
+        localStorage.removeItem("token");
+        setLoading(false);
       }
     });
-
     return () => {
-      unSubscribe();
+      return unsubscribe();
     };
   }, [axiosSecure]);
-  useEffect(() => {
-    if (user?.email) {
-      axiosSecure
-        .get(`/users/${user.email}`)
-        .then((res) => {
-          setRole(res.data.role); // Set the user's role
-        })
-        .catch((error) => {
-          console.error("Error fetching user role:", error);
-        });
-    }
-  }, [user, axiosSecure]);
+
   const authInfo = {
     handleRegister,
     handleLogin,

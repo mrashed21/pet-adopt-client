@@ -156,10 +156,11 @@ import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import { useNavigate, useParams } from "react-router-dom";
+import { AuthContext } from "../../../../Context/Auth/AuthProvider";
 import useAxiosSecure from "../../../../Hooks/UseAxiosSecure/useAxiosSecure";
 import DonationModal from "../../DonMod/DonMod";
 
@@ -170,7 +171,7 @@ const DonationDetails = () => {
   const [showModal, setShowModal] = useState(false);
   const axiosSecure = useAxiosSecure();
   const navigate = useNavigate();
-
+  const { user } = useContext(AuthContext);
   const handleNavigate = (id) => {
     navigate(`/donations/${id}`);
   };
@@ -257,7 +258,13 @@ const DonationDetails = () => {
           </Typography>
           <Button
             disabled={data.paused || new Date(data.lastDate) < new Date()}
-            onClick={() => setShowModal(true)}
+            onClick={() => {
+              if (user) {
+                setShowModal(true);
+              } else {
+                navigate("/login");
+              }
+            }}
             className="mt-6"
             color="green"
           >

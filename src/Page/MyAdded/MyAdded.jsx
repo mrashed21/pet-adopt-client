@@ -1,4 +1,3 @@
-
 import { Button, Card, CardBody, Typography } from "@material-tailwind/react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
@@ -11,6 +10,7 @@ import {
 import { useContext, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
+import TableSkeleton from "../../Common/TaboleSkeleton/TableSkeleton";
 import { AuthContext } from "../../Context/Auth/AuthProvider";
 import useAxiosSecure from "../../Hooks/UseAxiosSecure/useAxiosSecure";
 
@@ -21,13 +21,8 @@ const MyAdded = () => {
   const navigate = useNavigate();
   const [sorting, setSorting] = useState([]);
 
-  // Queries
-  const {
-    data: pets = [],
-    isLoading,
-    isError,
-    error,
-  } = useQuery({
+  // Fetch pets data with adoption requests
+  const { data: pets = [], isLoading  } = useQuery({
     queryKey: ["pets", user?.email],
     queryFn: async () => {
       const [petsResponse, adoptionsResponse] = await Promise.all([
@@ -47,7 +42,7 @@ const MyAdded = () => {
     enabled: !!user?.email,
   });
 
-  // Mutations
+  // Delete mutation
   const deleteMutation = useMutation({
     mutationFn: async (petId) => {
       const adoptions =
@@ -69,6 +64,7 @@ const MyAdded = () => {
     },
   });
 
+  // Adoption mutation
   const adoptionMutation = useMutation({
     mutationFn: async ({ petId, adoptionId, status }) => {
       if (status === "accepted") {
@@ -96,8 +92,29 @@ const MyAdded = () => {
   const columns = useMemo(
     () => [
       {
+        accessorKey: "serialNumber",
+        header: "Serial No.",
+        cell: (info) => (
+          <Typography variant="small" color="blue-gray" className="font-normal">
+            {info.row.index + 1}
+          </Typography>
+        ),
+      },
+      {
         accessorKey: "name",
-        header: "Pet Name",
+        header: ({ column }) => (
+          <div
+            className="cursor-pointer flex items-center gap-2"
+            onClick={() => column.toggleSorting()}
+          >
+            Pet Name
+            {column.getIsSorted() === "asc"
+              ? " ↑"
+              : column.getIsSorted() === "desc"
+              ? " ↓"
+              : ""}
+          </div>
+        ),
         cell: (info) => (
           <Typography variant="small" color="blue-gray" className="font-normal">
             {info.getValue()}
@@ -106,7 +123,19 @@ const MyAdded = () => {
       },
       {
         accessorKey: "category",
-        header: "Category",
+        header: ({ column }) => (
+          <div
+            className="cursor-pointer flex items-center gap-2"
+            onClick={() => column.toggleSorting()}
+          >
+            Category
+            {column.getIsSorted() === "asc"
+              ? " ↑"
+              : column.getIsSorted() === "desc"
+              ? " ↓"
+              : ""}
+          </div>
+        ),
         cell: (info) => (
           <Typography
             variant="small"
@@ -125,7 +154,7 @@ const MyAdded = () => {
             <img
               src={row.original.imageUrl}
               alt={row.original.name}
-              className="h-16 w-16 object-cover rounded-lg shadow-md"
+              className="h-16 w-20  rounded-lg shadow-md"
               onError={(e) => {
                 e.target.src = "/api/placeholder/150/150";
               }}
@@ -135,7 +164,19 @@ const MyAdded = () => {
       },
       {
         accessorKey: "adopted",
-        header: "Status",
+        header: ({ column }) => (
+          <div
+            className="cursor-pointer flex items-center gap-2"
+            onClick={() => column.toggleSorting()}
+          >
+            Status
+            {column.getIsSorted() === "asc"
+              ? " ↑"
+              : column.getIsSorted() === "desc"
+              ? " ↓"
+              : ""}
+          </div>
+        ),
         cell: ({ row }) => {
           const status = row.original.adopted;
           const hasPendingRequests = row.original.adoptionRequests?.some(
@@ -145,14 +186,15 @@ const MyAdded = () => {
           return (
             <div
               className={`
-              px-4 py-1 rounded-full text-center w-24
-              ${
-                status === true
-                  ? "bg-green-100 text-green-800"
-                  : hasPendingRequests
-                  ? "bg-yellow-100 text-yellow-800"
-                  : "bg-blue-100 text-blue-800"
-              }`}
+                px-4 py-1 rounded-full text-center w-24
+                ${
+                  status === true
+                    ? "bg-green-100 text-green-800"
+                    : hasPendingRequests
+                    ? "bg-yellow-100 text-yellow-800"
+                    : "bg-blue-100 text-blue-800"
+                }
+              `}
             >
               <Typography className="font-medium text-sm">
                 {status === true
@@ -171,38 +213,12 @@ const MyAdded = () => {
         cell: ({ row }) => {
           const pet = row.original;
           const isAdopted = pet.adopted === true;
+          const hasPendingRequests = pet.adoptionRequests?.some(
+            (r) => r.status === "pending"
+          );
           const pendingRequest = pet.adoptionRequests?.find(
             (r) => r.status === "pending"
           );
-
-          if (pendingRequest) {
-            return (
-              <div className="flex gap-2">
-                <Button
-                  size="sm"
-                  color="green"
-                  className="px-4"
-                  onClick={() =>
-                    handleAdoption(pet._id, pendingRequest._id, "accepted")
-                  }
-                  disabled={adoptionMutation.isPending}
-                >
-                  Accept
-                </Button>
-                <Button
-                  size="sm"
-                  color="orange"
-                  className="px-4"
-                  onClick={() =>
-                    handleAdoption(pet._id, pendingRequest._id, "rejected")
-                  }
-                  disabled={adoptionMutation.isPending}
-                >
-                  Reject
-                </Button>
-              </div>
-            );
-          }
 
           return (
             <div className="flex gap-2">
@@ -211,7 +227,7 @@ const MyAdded = () => {
                 color="blue"
                 className="px-4"
                 onClick={() => navigate(`/dashboard/update-pet/${pet._id}`)}
-                disabled={isAdopted}
+                disabled={isAdopted || hasPendingRequests}
               >
                 Update
               </Button>
@@ -221,9 +237,28 @@ const MyAdded = () => {
                 color="red"
                 className="px-4"
                 onClick={() => handleDelete(pet._id)}
-                disabled={deleteMutation.isPending}
+                disabled={deleteMutation.isPending || hasPendingRequests}
               >
                 {deleteMutation.isPending ? "Deleting..." : "Delete"}
+              </Button>
+
+              <Button
+                size="sm"
+                color="green"
+                className="px-4"
+                onClick={() =>
+                  pendingRequest
+                    ? handleAdoption(pet._id, pendingRequest._id, "accepted")
+                    : null
+                }
+                disabled={
+                  adoptionMutation.isPending ||
+                  isAdopted ||
+                  !hasPendingRequests ||
+                  pet.status === "Available"
+                }
+              >
+                Adopt
               </Button>
             </div>
           );
@@ -233,6 +268,7 @@ const MyAdded = () => {
     [deleteMutation.isPending, adoptionMutation.isPending]
   );
 
+  // Table configuration
   const table = useReactTable({
     data: pets,
     columns,
@@ -291,113 +327,182 @@ const MyAdded = () => {
     });
   };
 
+  // Loading state
   if (isLoading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <Typography variant="h6" color="blue-gray">
-          Loading...
-        </Typography>
-      </div>
-    );
+    return <TableSkeleton />;
   }
 
-  if (isError) {
-    return (
-      <div className="container mx-auto px-4 py-8">
-        <Typography color="red" variant="h6">
-          Error: {error.message}
-        </Typography>
-      </div>
-    );
-  }
+  // Error state
+  // if (isError) {
+  //   return (
+  //     <div className="container mx-auto px-4 py-8">
+  //       <Typography color="red" variant="h6">
+  //         Error: {error.message}
+  //       </Typography>
+  //     </div>
+  //   );
+  // }
 
+  // Main render
   return (
-    <Card className="h-full w-full">
-      <CardBody>
-        <Typography
-          variant="h4"
-          color="blue-gray"
-          className="mb-6 font-bold text-center"
-        >
-          Pet Management
-        </Typography>
+    // <Card className="h-full w-full">
+    //   <CardBody>
+    //     <Typography
+    //       variant="h4"
+    //       color="blue-gray"
+    //       className="mb-6 font-bold text-center"
+    //     >
+    //       Pet Management
+    //     </Typography>
 
-        <div className="overflow-x-auto">
-          <table className="w-full min-w-max table-auto text-left">
-            <thead>
-              {table.getHeaderGroups().map((headerGroup) => (
-                <tr key={headerGroup.id}>
-                  {headerGroup.headers.map((header) => (
-                    <th
-                      key={header.id}
-                      className="border-b border-blue-gray-100 bg-blue-gray-50 p-4"
-                    >
-                      <Typography
-                        variant="small"
-                        color="blue-gray"
-                        className="font-bold leading-none"
+    //     <div className="overflow-x-auto">
+    //       <table className="w-full min-w-max table-auto text-left">
+    //         <thead>
+    //           {table.getHeaderGroups().map((headerGroup) => (
+    //             <tr key={headerGroup.id}>
+    //               {headerGroup.headers.map((header) => (
+    //                 <th
+    //                   key={header.id}
+    //                   className="border-b border-blue-gray-100 bg-blue-gray-50 p-4"
+    //                 >
+    //                   {flexRender(
+    //                     header.column.columnDef.header,
+    //                     header.getContext()
+    //                   )}
+    //                 </th>
+    //               ))}
+    //             </tr>
+    //           ))}
+    //         </thead>
+    //         <tbody>
+    //           {table.getRowModel().rows.map((row, index) => (
+    //             <tr
+    //               key={row.id}
+    //               className={index % 2 === 0 ? "bg-blue-gray-50/50" : ""}
+    //             >
+    //               {row.getVisibleCells().map((cell) => (
+    //                 <td
+    //                   key={cell.id}
+    //                   className="p-4 border-b border-blue-gray-50"
+    //                 >
+    //                   {flexRender(
+    //                     cell.column.columnDef.cell,
+    //                     cell.getContext()
+    //                   )}
+    //                 </td>
+    //               ))}
+    //             </tr>
+    //           ))}
+    //         </tbody>
+    //       </table>
+    //     </div>
+
+    //     {pets.length > 10 && (
+    //       <div className="flex items-center justify-between gap-4 mt-4">
+    //         <Button
+    //           variant="text"
+    //           className="flex items-center gap-2"
+    //           onClick={() => table.previousPage()}
+    //           disabled={!table.getCanPreviousPage()}
+    //         >
+    //           Previous
+    //         </Button>
+    //         <div className="flex items-center gap-2">
+    //           <Typography color="gray" className="font-normal">
+    //             Page {table.getState().pagination.pageIndex + 1} of{" "}
+    //             {table.getPageCount()}
+    //           </Typography>
+    //         </div>
+    //         <Button
+    //           variant="text"
+    //           className="flex items-center gap-2"
+    //           onClick={() => table.nextPage()}
+    //           disabled={!table.getCanNextPage()}
+    //         >
+    //           Next
+    //         </Button>
+    //       </div>
+    //     )}
+    //   </CardBody>
+    // </Card>
+
+    <div className="container mx-auto p-4">
+      <Typography variant="h4" className="my-4 text-center">
+        My Added Pets
+      </Typography>
+
+      {isLoading ? (
+        <TableSkeleton />
+      ) : pets.length === 0 ? (
+        <Typography variant="h4" className="text-center mt-20 text-gray-500">
+          No data found
+        </Typography>
+      ) : (
+        <Card>
+          <CardBody>
+            <table className="table-auto w-full">
+              <thead>
+                {table.getHeaderGroups().map((headerGroup) => (
+                  <tr key={headerGroup.id}>
+                    {headerGroup.headers.map((header) => (
+                      <th
+                        key={header.id}
+                        className="px-4 py-2 text-left bg-gray-100"
                       >
                         {flexRender(
                           header.column.columnDef.header,
                           header.getContext()
                         )}
-                      </Typography>
-                    </th>
-                  ))}
-                </tr>
-              ))}
-            </thead>
-            <tbody>
-              {table.getRowModel().rows.map((row, index) => (
-                <tr
-                  key={row.id}
-                  className={index % 2 === 0 ? "bg-blue-gray-50/50" : ""}
+                      </th>
+                    ))}
+                  </tr>
+                ))}
+              </thead>
+              <tbody>
+                {table.getRowModel().rows.map((row) => (
+                  <tr key={row.id}>
+                    {row.getVisibleCells().map((cell) => (
+                      <td key={cell.id} className="px-4 py-2">
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        )}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            {pets.length > 10 && (
+              <div className="flex items-center justify-between gap-4 mt-4">
+                <Button
+                  variant="text"
+                  className="flex items-center gap-2"
+                  onClick={() => table.previousPage()}
+                  disabled={!table.getCanPreviousPage()}
                 >
-                  {row.getVisibleCells().map((cell) => (
-                    <td
-                      key={cell.id}
-                      className="p-4 border-b border-blue-gray-50"
-                    >
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
-                    </td>
-                  ))}
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-
-        {pets.length > 10 && (
-          <div className="flex items-center justify-between gap-4 mt-4">
-            <Button
-              variant="text"
-              className="flex items-center gap-2"
-              onClick={() => table.previousPage()}
-              disabled={!table.getCanPreviousPage()}
-            >
-              Previous
-            </Button>
-            <div className="flex items-center gap-2">
-              <Typography color="gray" className="font-normal">
-                Page {table.getState().pagination.pageIndex + 1} of{" "}
-                {table.getPageCount()}
-              </Typography>
-            </div>
-            <Button
-              variant="text"
-              className="flex items-center gap-2"
-              onClick={() => table.nextPage()}
-              disabled={!table.getCanNextPage()}
-            >
-              Next
-            </Button>
-          </div>
-        )}
-      </CardBody>
-    </Card>
+                  Previous
+                </Button>
+                <div className="flex items-center gap-2">
+                  <Typography color="gray" className="font-normal">
+                    Page {table.getState().pagination.pageIndex + 1} of{" "}
+                    {table.getPageCount()}
+                  </Typography>
+                </div>
+                <Button
+                  variant="text"
+                  className="flex items-center gap-2"
+                  onClick={() => table.nextPage()}
+                  disabled={!table.getCanNextPage()}
+                >
+                  Next
+                </Button>
+              </div>
+            )}
+          </CardBody>
+        </Card>
+      )}
+    </div>
   );
 };
 
