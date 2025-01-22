@@ -1,144 +1,3 @@
-// import axios from "axios";
-// import { useEffect, useState } from "react";
-
-// const PetsTable = () => {
-//   const [pets, setPets] = useState([]);
-//   const [isLoading, setIsLoading] = useState(true);
-//   //   const axiosSecure = useAxiosSecure();
-//   // Fetch all pets
-//   const fetchPets = async () => {
-//     try {
-//       const response = await axios.get("http://localhost:5000/admin/pets");
-//       setPets(response.data);
-//     } catch (error) {
-//       console.error("Error fetching pets:", error);
-//     } finally {
-//       setIsLoading(false);
-//     }
-//   };
-
-//   // Delete a pet
-//   const deletePet = async (petId) => {
-//     try {
-//       await axios.delete(`/pets/${petId}`);
-//       setPets((prev) => prev.filter((pet) => pet._id !== petId));
-//     } catch (error) {
-//       console.error("Error deleting pet:", error);
-//     }
-//   };
-
-//   // Update a pet
-//   const updatePet = async (petId, updatedData) => {
-//     try {
-//       const response = await axios.put(`/pets/${petId}`, updatedData);
-//       setPets((prev) =>
-//         prev.map((pet) => (pet._id === petId ? response.data : pet))
-//       );
-//     } catch (error) {
-//       console.error("Error updating pet:", error);
-//     }
-//   };
-
-//   // Toggle adoption status
-//   const toggleAdoptionStatus = async (petId, currentStatus) => {
-//     try {
-//       const updatedStatus = {
-//         status: currentStatus === "Adopted" ? "Not Adopted" : "Adopted",
-//       };
-//       const response = await axios.put(`/pets/${petId}/status`, updatedStatus);
-//       setPets((prev) =>
-//         prev.map((pet) => (pet._id === petId ? response.data : pet))
-//       );
-//     } catch (error) {
-//       console.error("Error updating adoption status:", error);
-//     }
-//   };
-
-//   useEffect(() => {
-//     fetchPets();
-//   }, []);
-
-//   if (isLoading) return <div className="text-center mt-4">Loading...</div>;
-
-//   return (
-//     <div className="container mx-auto mt-10">
-//       <table className="w-full border border-gray-300 shadow-md">
-//         <thead className="bg-gray-100">
-//           <tr>
-//             <th className="border-b-2 border-gray-300 px-4 py-2 text-left">
-//               Name
-//             </th>
-//             <th className="border-b-2 border-gray-300 px-4 py-2 text-left">
-//               Species
-//             </th>
-//             <th className="border-b-2 border-gray-300 px-4 py-2 text-left">
-//               Age
-//             </th>
-//             <th className="border-b-2 border-gray-300 px-4 py-2 text-left">
-//               Owner
-//             </th>
-//             <th className="border-b-2 border-gray-300 px-4 py-2 text-left">
-//               Adoption Status
-//             </th>
-//             <th className="border-b-2 border-gray-300 px-4 py-2 text-left">
-//               Actions
-//             </th>
-//           </tr>
-//         </thead>
-//         <tbody>
-//           {pets?.map((pet) => (
-//             <tr key={pet._id} className="hover:bg-gray-50">
-//               <td className="border-b border-gray-200 px-4 py-2">{pet.name}</td>
-//               <td className="border-b border-gray-200 px-4 py-2">
-//                 {pet.species}
-//               </td>
-//               <td className="border-b border-gray-200 px-4 py-2">{pet.age}</td>
-//               <td className="border-b border-gray-200 px-4 py-2">
-//                 {pet.owner}
-//               </td>
-//               <td className="border-b border-gray-200 px-4 py-2">
-//                 {pet.status}
-//               </td>
-//               <td className="border-b border-gray-200 px-4 py-2">
-//                 <div className="flex gap-2">
-//                   <button
-//                     className="bg-red-500 text-white px-4 py-1 rounded hover:bg-red-600"
-//                     onClick={() => deletePet(pet._id)}
-//                   >
-//                     Delete
-//                   </button>
-//                   <button
-//                     className="bg-blue-500 text-white px-4 py-1 rounded hover:bg-blue-600"
-//                     onClick={() =>
-//                       updatePet(pet._id, {
-//                         name: prompt("Enter new name:", pet.name),
-//                       })
-//                     }
-//                   >
-//                     Update
-//                   </button>
-//                   <button
-//                     className={`${
-//                       pet.status === "Adopted" ? "bg-gray-500" : "bg-green-500"
-//                     } text-white px-4 py-1 rounded hover:opacity-90`}
-//                     onClick={() => toggleAdoptionStatus(pet._id, pet.status)}
-//                   >
-//                     {pet.status === "Adopted"
-//                       ? "Mark Not Adopted"
-//                       : "Mark Adopted"}
-//                   </button>
-//                 </div>
-//               </td>
-//             </tr>
-//           ))}
-//         </tbody>
-//       </table>
-//     </div>
-//   );
-// };
-
-// export default PetsTable;
-
 
 import { Button, Card, CardBody, Typography } from "@material-tailwind/react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -152,11 +11,12 @@ import {
 import { useContext, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
-import { AuthContext } from "../../../../Context/Auth/AuthProvider";
-import useAxiosSecure from "../../../../Hooks/UseAxiosSecure/useAxiosSecure";
+import { AuthContext } from "../../../Context/Auth/AuthProvider";
+import useAxiosSecure from "../../../Hooks/UseAxiosSecure/useAxiosSecure";
+import TableSkeleton from "../../../Common/TaboleSkeleton/TableSkeleton";
 
 
-const MyAdded = () => {
+const PetsTable = () => {
   const { user } = useContext(AuthContext);
   const axiosSecure = useAxiosSecure();
   const queryClient = useQueryClient();
@@ -435,11 +295,7 @@ const MyAdded = () => {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <Typography variant="h6" color="blue-gray">
-          Loading...
-        </Typography>
-      </div>
+      <TableSkeleton/>
     );
   }
 
@@ -543,4 +399,4 @@ const MyAdded = () => {
   );
 };
 
-export default MyAdded;
+export default PetsTable;

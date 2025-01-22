@@ -9,7 +9,6 @@ import MainLayOut from "../Layout/MainLayOut";
 import AddPetForm from "../Page/AddPetFrom/AddPetFrom";
 import AdminDonation from "../Page/Admin/AdminDonation/AdminDonation";
 import AllUser from "../Page/Admin/AllUser/AllUser";
-import PetsTable from "../Page/Admin/AllUser/PetsTable/PetsTable";
 import AddDonation from "../Page/Donation/AddDonation/AddDonation";
 import DonationDetails from "../Page/Donation/DonationCard/DonationDetails/DonationDetails";
 import DonationPage from "../Page/Donation/DonationPage/DonationPage";
@@ -23,6 +22,7 @@ import PetDetails from "../Page/PetListing/PetDetails/PetDetails";
 import UpdatePet from "../Page/UpdatePet/UpdatePet";
 import UserProfile from "../Page/UserProfile/UserProfile";
 import PrivateRoute from "./PrivateRoute";
+import PetsTable from "../Page/Admin/PetsTable/PetsTable";
 
 const Routes = createBrowserRouter([
   {
@@ -143,11 +143,9 @@ const Routes = createBrowserRouter([
       },
       {
         path: "all-pet",
-        element: (
-          <PrivateRoute>
-            <PetsTable />
-          </PrivateRoute>
-        ),
+        element: <PrivateRoute>
+          <PetsTable />
+        </PrivateRoute>,
       },
       {
         path: "all-donation",

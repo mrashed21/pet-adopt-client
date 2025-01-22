@@ -34,7 +34,7 @@ const Dashboard = () => {
         </Typography>
         <div className="flex items-center gap-4">
           <Avatar
-            src={user?.photoURL || "https://via.placeholder.com/150"}
+            src={user?.photoURL}
             alt="User Avatar"
             size="sm"
             className="border-2 border-blue-500"
@@ -160,7 +160,7 @@ const Dashboard = () => {
           </div>
           {role === "admin" && (
             <>
-              <Admin/>
+              <Admin />
             </>
           )}
         </aside>

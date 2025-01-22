@@ -96,7 +96,7 @@ const UpdateDonation = () => {
           draggable: true,
         });
 
-        navigate("/dashboard/my-compain");
+        navigate(-1);
       } catch (error) {
         console.error("Error updating donation campaign:", error);
         Swal.fire({

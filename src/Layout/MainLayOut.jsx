@@ -14,9 +14,6 @@ const MainLayOut = () => {
           <Navbar />
         </div>
       </header>
-        {/* <section>
-          <Navbar />
-        </section> */}
         <main>
           <Outlet />
         </main>
