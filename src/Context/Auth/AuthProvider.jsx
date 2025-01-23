@@ -97,10 +97,7 @@ const AuthProvider = ({ children }) => {
     setLoading(true);
     try {
       const result = await signInWithPopup(auth, githubProvider);
-
       const user = result.user;
-      console.log("GitHub User Data:", user);
-
       // Save user to database
       await axiosSecure.post("/users/add", {
         email: user.email || "No Email Provided",

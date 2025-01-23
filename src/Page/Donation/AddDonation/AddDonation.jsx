@@ -83,7 +83,7 @@ const AddDonation = () => {
           createdAt: new Date().toISOString(),
           lastDate: values.lastDate, 
         };
-        console.log(campaignData);
+
         await axiosSecure.post("/donations/add", campaignData);
         Swal.fire({
           title: "Donation campaign created successfully!",

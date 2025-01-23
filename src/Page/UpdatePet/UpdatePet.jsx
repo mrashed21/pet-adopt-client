@@ -405,7 +405,6 @@ const UpdatePet = () => {
         imageUrl,
         age: Number(pet.age),
       });
-      console.log("Update response:", response.data);
       Swal.fire({
         title: "Pet updated successfully!",
         icon: "success",
