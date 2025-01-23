@@ -5,6 +5,8 @@ import AdoptRequest from "../Dashboard/AdoptRequest/AdoptRequest";
 import Dashboard from "../Dashboard/Dashboard";
 // import DashBoardHome from "../Dashboard/Home/DashBoardHome";
 import { HelmetProvider } from "react-helmet-async";
+import Welcome from "../Dashboard/Welcome/Welcome";
+import Error from "../Error/Error";
 import MainLayOut from "../Layout/MainLayOut";
 import AddPetForm from "../Page/AddPetFrom/AddPetFrom";
 import AdminDonation from "../Page/Admin/AdminDonation/AdminDonation";
@@ -23,13 +25,12 @@ import PetDetails from "../Page/PetListing/PetDetails/PetDetails";
 import UpdatePet from "../Page/UpdatePet/UpdatePet";
 import UserProfile from "../Page/UserProfile/UserProfile";
 import PrivateRoute from "./PrivateRoute";
-import Welcome from "../Dashboard/Welcome/Welcome";
 
 const Routes = createBrowserRouter([
   {
     path: "/",
     element: <MainLayOut />,
-    errorElement: <h1>Error</h1>,
+    errorElement: <Error />,
     children: [
       { path: "/", element: <Home /> },
       { path: "/pet-listing", element: <PetListing /> },
@@ -57,8 +58,9 @@ const Routes = createBrowserRouter([
         </HelmetProvider>
       </PrivateRoute>
     ),
+    errorElement: <Error />,
     children: [
-      {path: "", element: <Welcome/>},
+      { path: "", element: <Welcome /> },
       {
         path: "profile",
         element: (

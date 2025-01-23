@@ -51,14 +51,6 @@ const PetsTable = () => {
   // Mutations
   const deleteMutation = useMutation({
     mutationFn: async (petId) => {
-      const adoptions =
-        pets.find((p) => p._id === petId)?.adoptionRequests || [];
-      const pendingAdoptions = adoptions.filter((a) => a.status === "pending");
-
-      if (pendingAdoptions.length > 0) {
-        throw new Error("Cannot delete pet with pending adoption requests");
-      }
-
       return axiosSecure.delete(`/pets/${petId}`);
     },
     onSuccess: () => {

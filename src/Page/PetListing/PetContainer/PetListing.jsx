@@ -83,7 +83,7 @@ const PetListing = () => {
       {/* Infinite Scroll Indicator */}
       <div
         ref={ref}
-        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
+        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-5"
       >
         {isFetchingNextPage &&
           Array.from({ length: 9 }).map((_, index) => (
