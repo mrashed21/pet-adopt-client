@@ -149,7 +149,7 @@ const UpdateDonation = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className=" bg-gray-50 py-8">
       <Helmet>
         <title>Update - Donations</title>
       </Helmet>

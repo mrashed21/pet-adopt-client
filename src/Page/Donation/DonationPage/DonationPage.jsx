@@ -65,7 +65,7 @@ const DonationPage = () => {
   }
 
   return (
-    <div className="min-h-screen  p-6">
+    <div className="  p-6">
       <Helmet>
         <title>Donations</title>
       </Helmet>

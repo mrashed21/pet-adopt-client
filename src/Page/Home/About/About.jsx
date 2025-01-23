@@ -43,7 +43,7 @@ const About = () => {
               src="https://i.ibb.co.com/kmQMJfX/nathan-hanna-7hx-C83-Qcuwo-unsplash.jpg"
               alt="Helping Pets"
               className="rounded-lg shadow-lg h-96"
-              data-aos="fade-right"
+              data-aos="fade-up"
             />
           </motion.div>
 

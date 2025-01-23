@@ -31,7 +31,7 @@ const GetInvolved = () => {
           <motion.div
             whileHover={{ scale: 1.05 }}
             transition={{ duration: 0.3 }}
-            data-aos="zoom-in"
+            data-aos="fade-up"
             className="bg-white dark:bg-gray-700 p-6 rounded-lg shadow-lg"
           >
             <Typography variant="h5" className="font-bold">
@@ -48,7 +48,7 @@ const GetInvolved = () => {
           <motion.div
             whileHover={{ scale: 1.05 }}
             transition={{ duration: 0.3 }}
-            data-aos="zoom-in"
+            data-aos="fade-up"
             className="bg-white dark:bg-gray-700 p-6 rounded-lg shadow-lg"
           >
             <Typography variant="h5" className="font-bold">
@@ -65,7 +65,7 @@ const GetInvolved = () => {
           <motion.div
             whileHover={{ scale: 1.05 }}
             transition={{ duration: 0.3 }}
-            data-aos="zoom-in"
+            data-aos="fade-up"
             className="bg-white dark:bg-gray-700 p-6 rounded-lg shadow-lg"
           >
             <Typography variant="h5" className="font-bold">

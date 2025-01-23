@@ -79,7 +79,7 @@ const Login = () => {
         <title>Login</title>
       </Helmet>
       {/* Login Form */}
-      <div className="py-10 min-h-screen flex items-center justify-center dark:bg-[#292933]">
+      <div className="py-10 flex items-center justify-center dark:bg-[#292933]">
         <Card className="p-6 md:w-1/2 w-full shadow-lg dark:bg-[#303030] dark:text-white">
           <Typography
             variant="h4"

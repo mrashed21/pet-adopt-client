@@ -10,7 +10,7 @@ const MainLayOut = () => {
       <div className=" bg-gray-400 dark:bg-[#292933] ">
         <HelmetProvider>
           <header className="sticky top-0 left-0 right-0 z-50">
-            <div className="max-w-screen-2xl mx-auto">
+            <div className="max-w-screen-[1580px] mx-auto">
               <Navbar />
             </div>
           </header>

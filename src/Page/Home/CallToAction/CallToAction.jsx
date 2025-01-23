@@ -25,7 +25,7 @@ const CallToAction = () => {
             src="https://i.ibb.co.com/qBw3xG8/petindenger1.jpg"
             alt="Adopt a Pet"
             className="rounded-lg shadow-lg h-96"
-            data-aos="fade-right"
+            data-aos="fade-up"
           />
         </motion.div>
 
@@ -63,7 +63,7 @@ const CallToAction = () => {
               color="blue-gray"
               size="lg"
               className="font-bold shadow-lg hover:shadow-xl"
-              data-aos="zoom-in"
+              data-aos="fade-up"
               data-aos-delay="400"
             >
               Start Your Journey

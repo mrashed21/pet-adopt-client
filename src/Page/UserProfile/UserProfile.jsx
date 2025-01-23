@@ -54,11 +54,11 @@ const UserProfile = () => {
   return (
     <>
     <Helmet>
-        <title>Dashboard</title>
+        <title>Profile</title>
       </Helmet>
-      <div className="flex flex-col items-center justify-center px-4 py-8">
+      <div className="flex flex-col items-center justify-center px-4 py-8 dark:bg-[#292933">
         <Card className="flex flex-col items-center w-full max-w-md p-6 shadow-lg">
-          <div className="h-24 w-24 rounded-full overflow-hidden border-2 border-gray-300">
+          <div className="h-24 w-24 rounded-full overflow-hidden border-2 border-gray-300 dark:bg-[]">
             <img
               className="w-full h-full object-cover"
               src={user.photoURL}

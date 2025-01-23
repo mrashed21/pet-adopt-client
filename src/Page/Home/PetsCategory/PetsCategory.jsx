@@ -52,7 +52,7 @@ const PetsCategory = () => {
             >
               <Card
                 className="hover:shadow-lg transition-shadow duration-300 dark:bg-[#303030] dark:border-2"
-                data-aos="zoom-in"
+                data-aos="fade-up"
               >
                 <CardBody className="flex flex-col items-center text-center p-3">
                   <img

@@ -345,8 +345,91 @@ const MyAdded = () => {
   // }
 
   // Main render
+  //   return (
+  //     <div className="container mx-auto p-4">
+  //       <Helmet>
+  //         <title>My Added Pets</title>
+  //       </Helmet>
+  //       <Typography variant="h4" className="my-4 text-center">
+  //         My Added Pets
+  //       </Typography>
+
+  //       {isLoading ? (
+  //         <TableSkeleton />
+  //       ) : pets.length === 0 ? (
+  //         <Typography variant="h4" className="text-center mt-20 text-gray-500">
+  //           No data found
+  //         </Typography>
+  //       ) : (
+  //         <Card>
+  //           <CardBody>
+  //             <table className="table-auto w-full">
+  //               <thead>
+  //                 {table.getHeaderGroups().map((headerGroup) => (
+  //                   <tr key={headerGroup.id}>
+  //                     {headerGroup.headers.map((header) => (
+  //                       <th
+  //                         key={header.id}
+  //                         className="px-4 py-2 text-left bg-gray-100"
+  //                       >
+  //                         {flexRender(
+  //                           header.column.columnDef.header,
+  //                           header.getContext()
+  //                         )}
+  //                       </th>
+  //                     ))}
+  //                   </tr>
+  //                 ))}
+  //               </thead>
+  //               <tbody>
+  //                 {table.getRowModel().rows.map((row) => (
+  //                   <tr key={row.id}>
+  //                     {row.getVisibleCells().map((cell) => (
+  //                       <td key={cell.id} className="px-4 py-2">
+  //                         {flexRender(
+  //                           cell.column.columnDef.cell,
+  //                           cell.getContext()
+  //                         )}
+  //                       </td>
+  //                     ))}
+  //                   </tr>
+  //                 ))}
+  //               </tbody>
+  //             </table>
+  //             {pets.length > 10 && (
+  //               <div className="flex items-center justify-between gap-4 mt-4">
+  //                 <Button
+  //                   variant="text"
+  //                   className="flex items-center gap-2"
+  //                   onClick={() => table.previousPage()}
+  //                   disabled={!table.getCanPreviousPage()}
+  //                 >
+  //                   Previous
+  //                 </Button>
+  //                 <div className="flex items-center gap-2">
+  //                   <Typography color="gray" className="font-normal">
+  //                     Page {table.getState().pagination.pageIndex + 1} of{" "}
+  //                     {table.getPageCount()}
+  //                   </Typography>
+  //                 </div>
+  //                 <Button
+  //                   variant="text"
+  //                   className="flex items-center gap-2"
+  //                   onClick={() => table.nextPage()}
+  //                   disabled={!table.getCanNextPage()}
+  //                 >
+  //                   Next
+  //                 </Button>
+  //               </div>
+  //             )}
+  //           </CardBody>
+  //         </Card>
+  //       )}
+  //     </div>
+  //   );
+  // };
   return (
-    <div className="container mx-auto p-4">
+    <div className="container mx-auto px-4 py-4 md:px-6 lg:px-8">
       <Helmet>
         <title>My Added Pets</title>
       </Helmet>
@@ -361,52 +444,58 @@ const MyAdded = () => {
           No data found
         </Typography>
       ) : (
-        <Card>
-          <CardBody>
-            <table className="table-auto w-full">
-              <thead>
-                {table.getHeaderGroups().map((headerGroup) => (
-                  <tr key={headerGroup.id}>
-                    {headerGroup.headers.map((header) => (
-                      <th
-                        key={header.id}
-                        className="px-4 py-2 text-left bg-gray-100"
-                      >
-                        {flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
-                      </th>
-                    ))}
-                  </tr>
-                ))}
-              </thead>
-              <tbody>
-                {table.getRowModel().rows.map((row) => (
-                  <tr key={row.id}>
-                    {row.getVisibleCells().map((cell) => (
-                      <td key={cell.id} className="px-4 py-2">
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext()
-                        )}
-                      </td>
-                    ))}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+        <Card className="w-full overflow-x-auto">
+          <CardBody className="p-0 md:p-4">
+            <div className="overflow-x-auto">
+              <table className="w-full min-w-[900px] border-collapse">
+                <thead>
+                  {table.getHeaderGroups().map((headerGroup) => (
+                    <tr key={headerGroup.id}>
+                      {headerGroup.headers.map((header) => (
+                        <th
+                          key={header.id}
+                          className="px-2 md:px-4 py-2 text-left bg-gray-100 text-xs md:text-sm"
+                        >
+                          {flexRender(
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
+                        </th>
+                      ))}
+                    </tr>
+                  ))}
+                </thead>
+                <tbody>
+                  {table.getRowModel().rows.map((row) => (
+                    <tr key={row.id} className="hover:bg-gray-50">
+                      {row.getVisibleCells().map((cell) => (
+                        <td
+                          key={cell.id}
+                          className="px-2 md:px-4 py-2 text-xs md:text-sm"
+                        >
+                          {flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext()
+                          )}
+                        </td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
             {pets.length > 10 && (
-              <div className="flex items-center justify-between gap-4 mt-4">
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-4 px-2 md:px-4">
                 <Button
                   variant="text"
-                  className="flex items-center gap-2"
+                  className="w-full sm:w-auto text-xs md:text-sm flex items-center justify-center gap-2"
                   onClick={() => table.previousPage()}
                   disabled={!table.getCanPreviousPage()}
                 >
                   Previous
                 </Button>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 text-xs md:text-sm">
                   <Typography color="gray" className="font-normal">
                     Page {table.getState().pagination.pageIndex + 1} of{" "}
                     {table.getPageCount()}
@@ -414,7 +503,7 @@ const MyAdded = () => {
                 </div>
                 <Button
                   variant="text"
-                  className="flex items-center gap-2"
+                  className="w-full sm:w-auto text-xs md:text-sm flex items-center justify-center gap-2"
                   onClick={() => table.nextPage()}
                   disabled={!table.getCanNextPage()}
                 >
@@ -428,5 +517,4 @@ const MyAdded = () => {
     </div>
   );
 };
-
 export default MyAdded;
