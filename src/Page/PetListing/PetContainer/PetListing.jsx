@@ -5,6 +5,7 @@ import { useInView } from "react-intersection-observer";
 import SkeletonCard from "../../../Common/Skeleton/SkeletonCard";
 import useAxiosSecure from "../../../Hooks/UseAxiosSecure/useAxiosSecure";
 import PetCard from "../PetCard/PetCard";
+import { Helmet } from "react-helmet-async";
 
 const PetListing = () => {
   const [search, setSearch] = useState("");
@@ -36,8 +37,12 @@ const PetListing = () => {
   }, [inView, hasNextPage, fetchNextPage]);
 
   return (
-    <div className="p-4">
-      <Typography variant="h2" className="text-center my-4 font-bold">
+    
+    <div className="p-4 dark:bg-[#292933]">
+      <Helmet>
+              <title>Pet Adopt - All Pets</title>
+            </Helmet>
+      <Typography variant="h2" className="text-center my-4 font-bold dark:text-gray-200">
         Available Pets for Adoption
       </Typography>
 
@@ -65,7 +70,7 @@ const PetListing = () => {
       </div>
 
       {/* Pets Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-10">
         {isFetching && !data
           ? Array.from({ length: 9 }).map((_, index) => (
               <SkeletonCard key={index} />
@@ -76,7 +81,10 @@ const PetListing = () => {
       </div>
 
       {/* Infinite Scroll Indicator */}
-      <div ref={ref} className="h-10 flex justify-center items-center">
+      <div
+        ref={ref}
+        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
+      >
         {isFetchingNextPage &&
           Array.from({ length: 9 }).map((_, index) => (
             <SkeletonCard key={index} />

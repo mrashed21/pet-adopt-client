@@ -16,6 +16,7 @@ import * as Yup from "yup";
 import Swal from "sweetalert2";
 import { AuthContext } from "../../../Context/Auth/AuthProvider";
 import useAxiosSecure from "../../../Hooks/UseAxiosSecure/useAxiosSecure";
+import { Helmet } from "react-helmet-async";
 
 const AddDonation = () => {
   const [uploading, setUploading] = useState(false);
@@ -110,6 +111,9 @@ const AddDonation = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
+      <Helmet>
+              <title>Add - Donations</title>
+            </Helmet>
       <Card className="max-w-4xl mx-auto p-8">
         <CardBody>
           <Typography

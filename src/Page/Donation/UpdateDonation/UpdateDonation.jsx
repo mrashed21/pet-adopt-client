@@ -9,11 +9,13 @@ import {
 import axios from "axios";
 import { useFormik } from "formik";
 import { useEffect, useState } from "react";
+import { Helmet } from "react-helmet-async";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import { useNavigate, useParams } from "react-router-dom";
 import Swal from "sweetalert2";
 import * as Yup from "yup";
+import TableSkeleton from "../../../Common/TaboleSkeleton/TableSkeleton";
 import useAxiosSecure from "../../../Hooks/UseAxiosSecure/useAxiosSecure";
 
 const UpdateDonation = () => {
@@ -143,11 +145,14 @@ const UpdateDonation = () => {
   }, [id]);
 
   if (loading) {
-    return <div className="text-center py-8">Loading...</div>;
+    return <TableSkeleton />;
   }
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
+      <Helmet>
+        <title>Update - Donations</title>
+      </Helmet>
       <Card className="max-w-4xl mx-auto p-8">
         <CardBody>
           <Typography

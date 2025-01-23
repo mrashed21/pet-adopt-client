@@ -1,14 +1,15 @@
 import { createBrowserRouter } from "react-router-dom";
 import Login from "../Components/Login/Login";
 import Register from "../Components/Register/Register";
-import AuthProvider from "../Context/Auth/AuthProvider";
 import AdoptRequest from "../Dashboard/AdoptRequest/AdoptRequest";
 import Dashboard from "../Dashboard/Dashboard";
 // import DashBoardHome from "../Dashboard/Home/DashBoardHome";
+import { HelmetProvider } from "react-helmet-async";
 import MainLayOut from "../Layout/MainLayOut";
 import AddPetForm from "../Page/AddPetFrom/AddPetFrom";
 import AdminDonation from "../Page/Admin/AdminDonation/AdminDonation";
 import AllUser from "../Page/Admin/AllUser/AllUser";
+import PetsTable from "../Page/Admin/PetsTable/PetsTable";
 import AddDonation from "../Page/Donation/AddDonation/AddDonation";
 import DonationDetails from "../Page/Donation/DonationCard/DonationDetails/DonationDetails";
 import DonationPage from "../Page/Donation/DonationPage/DonationPage";
@@ -22,16 +23,12 @@ import PetDetails from "../Page/PetListing/PetDetails/PetDetails";
 import UpdatePet from "../Page/UpdatePet/UpdatePet";
 import UserProfile from "../Page/UserProfile/UserProfile";
 import PrivateRoute from "./PrivateRoute";
-import PetsTable from "../Page/Admin/PetsTable/PetsTable";
+import Welcome from "../Dashboard/Welcome/Welcome";
 
 const Routes = createBrowserRouter([
   {
     path: "/",
-    element: (
-      <AuthProvider>
-        <MainLayOut />
-      </AuthProvider>
-    ),
+    element: <MainLayOut />,
     errorElement: <h1>Error</h1>,
     children: [
       { path: "/", element: <Home /> },
@@ -51,17 +48,18 @@ const Routes = createBrowserRouter([
     ],
   },
   {
-    path: "dashboard",
+    path: "/dashboard",
     element: (
-      <AuthProvider>
-        <PrivateRoute>
+      <PrivateRoute>
+        <HelmetProvider>
+          {" "}
           <Dashboard />
-        </PrivateRoute>
-      </AuthProvider>
+        </HelmetProvider>
+      </PrivateRoute>
     ),
     children: [
+      {path: "", element: <Welcome/>},
       {
-        index: true,
         path: "profile",
         element: (
           <PrivateRoute>
@@ -143,9 +141,11 @@ const Routes = createBrowserRouter([
       },
       {
         path: "all-pet",
-        element: <PrivateRoute>
-          <PetsTable />
-        </PrivateRoute>,
+        element: (
+          <PrivateRoute>
+            <PetsTable />
+          </PrivateRoute>
+        ),
       },
       {
         path: "all-donation",

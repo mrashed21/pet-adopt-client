@@ -7,15 +7,20 @@ import {
 } from "@material-tailwind/react";
 import { useContext, useState } from "react";
 import { Helmet } from "react-helmet-async";
-import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { FaEye, FaEyeSlash, FaGithub } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
 import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { AuthContext } from "../../Context/Auth/AuthProvider";
 
 const Login = () => {
-  const { handleLogin, handleLoginGoogle, handleReseTPassword, setUser } =
-    useContext(AuthContext);
+  const {
+    handleLogin,
+    handleLoginGoogle,
+    handleReseTPassword,
+    setUser,
+    handleLoginGithub,
+  } = useContext(AuthContext);
 
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
@@ -39,17 +44,17 @@ const Login = () => {
       });
   };
 
-  const handleGoogleLogin = () => {
-    handleLoginGoogle()
-      .then((user) => {
-        setUser(user);
-        toast.success("Google login successful!");
-        navigate(redirectTo);
-      })
-      .catch(() => {
-        toast.error("Something went wrong! Try again.");
-      });
-  };
+  // const handleGoogleLogin = () => {
+  //   handleLoginGoogle()
+  //     .then((user) => {
+  //       setUser(user);
+  //       toast.success("Google login successful!");
+  //       navigate(redirectTo);
+  //     })
+  //     .catch(() => {
+  //       toast.error("Something went wrong! Try again.");
+  //     });
+  // };
 
   // Handle Password Reset
   const handlePasswordReset = async () => {
@@ -74,8 +79,8 @@ const Login = () => {
         <title>Login</title>
       </Helmet>
       {/* Login Form */}
-      <div className="py-10 min-h-screen flex items-center justify-center dark:bg-[#1E293B]">
-        <Card className="p-6 md:w-1/2 w-full shadow-lg dark:bg-[#202632] dark:text-white">
+      <div className="py-10 min-h-screen flex items-center justify-center dark:bg-[#292933]">
+        <Card className="p-6 md:w-1/2 w-full shadow-lg dark:bg-[#303030] dark:text-white">
           <Typography
             variant="h4"
             color="blue-gray"
@@ -142,10 +147,32 @@ const Login = () => {
           <Button
             variant="outlined"
             color="black"
-            onClick={handleGoogleLogin}
+            onClick={() => {
+              handleLoginGoogle().then(() => {
+                navigate(redirectTo);
+              });
+            }}
             className="w-full flex items-center justify-center gap-2 dark:text-white"
           >
             <FcGoogle className="text-2xl" /> Login with Google
+          </Button>
+          <Button
+            variant="outlined"
+            fullWidth
+            className="mt-4 flex items-center justify-center dark:text-white"
+            onClick={() =>
+              handleLoginGithub()
+                .then((user) => {
+                  setUser(user);
+                  toast.success("GitHub login successful!");
+                  navigate(redirectTo);
+                })
+                .catch(() => {
+                  toast.error("Something went wrong! Try again.");
+                })
+            }
+          >
+            <FaGithub className="mr-2 text-xl" /> Sign Up with GitHub
           </Button>
         </Card>
       </div>

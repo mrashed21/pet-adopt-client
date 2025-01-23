@@ -11,14 +11,12 @@ import { useNavigate } from "react-router-dom";
 
 const DonationCard = ({ donation }) => {
   const navigate = useNavigate();
-
   const handleViewDetails = (_id) => {
-    console.log(_id);
     navigate(`/donations/${_id}`);
   };
 
   return (
-    <Card className="shadow-lg">
+    <Card className="shadow-lg dark:bg-[#303030]">
       <CardHeader
         floated={false}
         className="h-48"
@@ -29,18 +27,21 @@ const DonationCard = ({ donation }) => {
         }}
       ></CardHeader>
       <CardBody>
-        <Typography variant="h5" className="mb-2 text-gray-800">
+        <Typography
+          variant="h5"
+          className="mb-2 text-gray-800 dark:text-gray-100"
+        >
           {donation.title}
         </Typography>
-        <Typography className="text-gray-600">
+        <Typography className="text-gray-600 dark:text-gray-100">
           Maximum Donation:{" "}
-          <span className="text-green-500 font-bold">
+          <span className="dark:text-red-400 font-bold">
             ${donation.goalAmount}
           </span>
         </Typography>
-        <Typography className="text-gray-600">
+        <Typography className="text-gray-600 dark:text-gray-100">
           Donated Amount:{" "}
-          <span className="text-green-500 font-bold">
+          <span className="dark:text-red-400 font-bold">
             ${donation.raisedAmount}
           </span>
         </Typography>

@@ -16,6 +16,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { useMemo } from "react";
+import { Helmet } from "react-helmet-async";
 import Swal from "sweetalert2";
 import TableSkeleton from "../../../Common/TaboleSkeleton/TableSkeleton";
 import useAxiosSecure from "../../../Hooks/UseAxiosSecure/useAxiosSecure";
@@ -176,90 +177,98 @@ const AllUser = () => {
   }
 
   return (
-    <Card className="h-full w-full max-w-7xl mx-auto">
-      <CardHeader floated={false} shadow={false} className="rounded-none">
-        <div className="mb-4 flex items-center justify-between gap-8">
-          <div>
-            <Typography variant="h5" color="blue-gray">
-              All Users
-            </Typography>
-            <Typography color="gray" className="mt-1 font-normal">
-              Total Users: {users.length}
-            </Typography>
+    <>
+      <Helmet>
+        <title>All User</title>
+      </Helmet>
+      <Card className="h-full w-full max-w-7xl mx-auto">
+        <CardHeader floated={false} shadow={false} className="rounded-none">
+          <div className="mb-4 flex items-center justify-between gap-8">
+            <div>
+              <Typography variant="h5" color="blue-gray">
+                All Users
+              </Typography>
+              <Typography color="gray" className="mt-1 font-normal">
+                Total Users: {users.length}
+              </Typography>
+            </div>
           </div>
-        </div>
-      </CardHeader>
-      <CardBody className="overflow-x-scroll px-0">
-        <table className="w-full min-w-max table-auto text-left">
-          <thead>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <tr key={headerGroup.id}>
-                {headerGroup.headers.map((header) => (
-                  <th
-                    key={header.id}
-                    className="border-y border-blue-gray-100 bg-blue-gray-50/50 p-4"
-                  >
-                    <Typography
-                      variant="small"
-                      color="blue-gray"
-                      className="font-normal leading-none opacity-70"
+        </CardHeader>
+        <CardBody className="overflow-x-scroll px-0">
+          <table className="w-full min-w-max table-auto text-left">
+            <thead>
+              {table.getHeaderGroups().map((headerGroup) => (
+                <tr key={headerGroup.id}>
+                  {headerGroup.headers.map((header) => (
+                    <th
+                      key={header.id}
+                      className="border-y border-blue-gray-100 bg-blue-gray-50/50 p-4"
                     >
+                      <Typography
+                        variant="small"
+                        color="blue-gray"
+                        className="font-normal leading-none opacity-70"
+                      >
+                        {flexRender(
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
+                      </Typography>
+                    </th>
+                  ))}
+                </tr>
+              ))}
+            </thead>
+            <tbody>
+              {table.getRowModel().rows.map((row) => (
+                <tr key={row.id} className="even:bg-blue-gray-50/50">
+                  {row.getVisibleCells().map((cell) => (
+                    <td key={cell.id} className="p-4">
                       {flexRender(
-                        header.column.columnDef.header,
-                        header.getContext()
+                        cell.column.columnDef.cell,
+                        cell.getContext()
                       )}
-                    </Typography>
-                  </th>
-                ))}
-              </tr>
-            ))}
-          </thead>
-          <tbody>
-            {table.getRowModel().rows.map((row) => (
-              <tr key={row.id} className="even:bg-blue-gray-50/50">
-                {row.getVisibleCells().map((cell) => (
-                  <td key={cell.id} className="p-4">
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </td>
-                ))}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </CardBody>
-      {users.length > 10 && (
-        <CardFooter className="flex items-center justify-between border-t border-blue-gray-50 p-4">
-          <Button
-            variant="outlined"
-            size="sm"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
-          >
-            <ArrowLeftIcon strokeWidth={2} className="h-4 w-4" />
-          </Button>
-          <div className="flex items-center gap-2">
-            <Typography color="gray" className="font-normal">
-              Page{" "}
-              <strong className="text-blue-gray-900">
-                {table.getState().pagination.pageIndex + 1}
-              </strong>{" "}
-              of{" "}
-              <strong className="text-blue-gray-900">
-                {table.getPageCount()}
-              </strong>
-            </Typography>
-          </div>
-          <Button
-            variant="outlined"
-            size="sm"
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
-          >
-            <ArrowRightIcon strokeWidth={2} className="h-4 w-4" />
-          </Button>
-        </CardFooter>
-      )}
-    </Card>
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </CardBody>
+        {users.length > 10 && (
+          <CardFooter className="flex items-center justify-between border-t border-blue-gray-50 p-4">
+            <Button
+              variant="outlined"
+              size="sm"
+              onClick={() => table.previousPage()}
+              disabled={!table.getCanPreviousPage()}
+            >
+              <ArrowLeftIcon strokeWidth={2} className="h-4 w-4" />
+            </Button>
+            <div className="flex items-center gap-2">
+              <Typography color="gray" className="font-normal">
+                Page{" "}
+                <strong className="text-blue-gray-900">
+                  {table.getState().pagination.pageIndex + 1}
+                </strong>{" "}
+                of{" "}
+                <strong className="text-blue-gray-900">
+                  {table.getPageCount()}
+                </strong>
+              </Typography>
+            </div>
+            <Button
+              variant="outlined"
+              size="sm"
+              onClick={() => table.nextPage()}
+              disabled={!table.getCanNextPage()}
+            >
+              <ArrowRightIcon strokeWidth={2} className="h-4 w-4" />
+            </Button>
+          </CardFooter>
+        )}
+      </Card>
+    </>
   );
 };
 

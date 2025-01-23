@@ -152,7 +152,7 @@ const Navbar = () => {
                 </div>
                 <div className="flex flex-col space-y-4">
                   <NavLinks />
-                  {user?.email ? (
+                  { user && user?.email ? (
                     <>
                       <NavLink
                         to="/dashboard"

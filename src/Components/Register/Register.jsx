@@ -34,7 +34,7 @@ const Register = () => {
 
   const onSubmit = async (values, { setSubmitting }) => {
     const { name, email, password, profile } = values;
-  try {
+    try {
       const formData = new FormData();
       formData.append("file", profile);
       formData.append(
@@ -63,9 +63,9 @@ const Register = () => {
         <title>Register</title>
       </Helmet>
 
-      <div className="dark:bg-[#1E293B] py-10">
+      <div className="dark:bg-[#292933] py-10">
         <div className="px-5 md:px-0 md:w-6/12 mx-auto">
-          <Card className="p-6 shadow-md dark:bg-[#202632] dark:text-white">
+          <Card className="p-6 shadow-md dark:bg-[#303030] dark:text-white">
             <Typography variant="h3" className="text-center font-bold mb-6">
               Register Now
             </Typography>
@@ -171,15 +171,10 @@ const Register = () => {
               fullWidth
               className="mt-4 flex items-center justify-center dark:text-white"
               onClick={() =>
-                handleLoginGoogle()
-                  .then((user) => {
-                    setUser(user);
-                    toast.success("Google login successful!");
-                    navigate(redirectTo);
-                  })
-                  .catch(() => {
-                    toast.error("Something went wrong! Try again.");
-                  })
+                handleLoginGoogle().then(() => {
+                  toast.success("Google login successful!");
+                  navigate(redirectTo);
+                })
               }
             >
               <FcGoogle className="mr-2 text-xl" /> Sign Up with Google

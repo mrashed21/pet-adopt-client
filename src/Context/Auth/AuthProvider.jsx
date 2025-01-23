@@ -15,17 +15,18 @@ import { createContext, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { auth } from "../../Firebase/firebase.config";
 
-import useAxiosSecure from "../../Hooks/UseAxiosSecure/useAxiosSecure";
+// import useAxiosSecure from "../../Hooks/UseAxiosSecure/useAxiosSecure";
+import useAxiosPublic from "../../Hooks/PublikAxios/PublicAxios";
 import { saveUser } from "../../utilites/utilite";
 
 // eslint-disable-next-line react-refresh/only-export-components
-export const AuthContext = createContext();
+export const AuthContext = createContext(null);
 
 const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [role, setRole] = useState(null);
-  const axiosSecure = useAxiosSecure();
+  const axiosSecure = useAxiosPublic();
   const handleRegister = async (email, password, name, photoURL) => {
     setLoading(true);
     try {
@@ -142,6 +143,9 @@ const AuthProvider = ({ children }) => {
       setLoading(false);
     }
   };
+  const logout = async () => {
+    return signOut(auth);
+  };
 
   // Update Profile
   const updateUserProfile = async (name, photoURL) => {
@@ -154,7 +158,6 @@ const AuthProvider = ({ children }) => {
       throw error;
     }
   };
-
 
   // onAuthStateChange
   useEffect(() => {
@@ -183,6 +186,35 @@ const AuthProvider = ({ children }) => {
     };
   }, [axiosSecure]);
 
+  // useEffect(() => {
+  //   const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+  //     // Set user immediately without waiting for additional checks
+  //     setUser(currentUser);
+
+  //     // If user exists, proceed with additional operations
+  //     if (currentUser) {
+  //       try {
+  //         // Get JWT token
+  //         const result = await axiosSecure.post("/jwt", {
+  //           email: currentUser?.email,
+  //         });
+  //         localStorage.setItem("token", result.data.token);
+
+  //         // save user information in the database if he is new
+  //         const userRole = await saveUser(currentUser);
+  //         setRole(userRole);
+  //       } catch (error) {
+  //         console.error("Error processing user login:", error);
+  //       } finally {
+  //         setLoading(false);
+  //       }
+  //     } else {
+  //       localStorage.removeItem("token");
+  //       setLoading(false);
+  //     }
+  //   });
+  //   return () => unsubscribe();
+  // }, [axiosSecure]);
   const authInfo = {
     handleRegister,
     handleLogin,
@@ -197,6 +229,7 @@ const AuthProvider = ({ children }) => {
     updateUserProfile,
     handleLoginGithub,
     role,
+    logout,
   };
 
   return (

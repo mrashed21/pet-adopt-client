@@ -8,6 +8,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { useContext, useMemo, useState } from "react";
+import { Helmet } from "react-helmet-async";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import TableSkeleton from "../../Common/TaboleSkeleton/TableSkeleton";
@@ -22,7 +23,7 @@ const MyAdded = () => {
   const [sorting, setSorting] = useState([]);
 
   // Fetch pets data with adoption requests
-  const { data: pets = [], isLoading  } = useQuery({
+  const { data: pets = [], isLoading } = useQuery({
     queryKey: ["pets", user?.email],
     queryFn: async () => {
       const [petsResponse, adoptionsResponse] = await Promise.all([
@@ -345,8 +346,10 @@ const MyAdded = () => {
 
   // Main render
   return (
-
     <div className="container mx-auto p-4">
+      <Helmet>
+        <title>My Added Pets</title>
+      </Helmet>
       <Typography variant="h4" className="my-4 text-center">
         My Added Pets
       </Typography>

@@ -9,6 +9,7 @@ import Swal from "sweetalert2";
 import * as Yup from "yup";
 import { AuthContext } from "../../Context/Auth/AuthProvider";
 import useAxiosSecure from "../../Hooks/UseAxiosSecure/useAxiosSecure";
+import { Helmet } from "react-helmet-async";
 
 // Constants
 const PET_CATEGORIES = [
@@ -115,6 +116,9 @@ const AddPetForm = () => {
   };
   return (
     <>
+    <Helmet>
+        <title>Add Pet</title>
+      </Helmet>
       <div className="my-8">
         <Typography
           variant="h4"
@@ -174,7 +178,7 @@ const AddPetForm = () => {
               </div>
 
               <div className="space-y-2">
-                <label className="block text-sm font-medium">Pet Age</label>
+                <label className="block text-sm font-medium">Pet Age (Month)</label>
                 <Field
                   type="text"
                   name="petAge"

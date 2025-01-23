@@ -1,4 +1,3 @@
-
 import { Button, Card, CardBody, Typography } from "@material-tailwind/react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
@@ -9,12 +8,12 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { useContext, useMemo, useState } from "react";
+import { Helmet } from "react-helmet-async";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
+import TableSkeleton from "../../../Common/TaboleSkeleton/TableSkeleton";
 import { AuthContext } from "../../../Context/Auth/AuthProvider";
 import useAxiosSecure from "../../../Hooks/UseAxiosSecure/useAxiosSecure";
-import TableSkeleton from "../../../Common/TaboleSkeleton/TableSkeleton";
-
 
 const PetsTable = () => {
   const { user } = useContext(AuthContext);
@@ -294,9 +293,7 @@ const PetsTable = () => {
   };
 
   if (isLoading) {
-    return (
-      <TableSkeleton/>
-    );
+    return <TableSkeleton />;
   }
 
   if (isError) {
@@ -310,92 +307,97 @@ const PetsTable = () => {
   }
 
   return (
-    <Card className="h-full w-full">
-      <CardBody>
-        <Typography
-          variant="h4"
-          color="blue-gray"
-          className="mb-6 font-bold text-center"
-        >
-          Pet Management
-        </Typography>
+    <>
+      <Helmet>
+        <title>All pets</title>
+      </Helmet>
+      <Card className="h-full w-full">
+        <CardBody>
+          <Typography
+            variant="h4"
+            color="blue-gray"
+            className="mb-6 font-bold text-center"
+          >
+            Pet Management
+          </Typography>
 
-        <div className="overflow-x-auto">
-          <table className="w-full min-w-max table-auto text-left">
-            <thead>
-              {table.getHeaderGroups().map((headerGroup) => (
-                <tr key={headerGroup.id}>
-                  {headerGroup.headers.map((header) => (
-                    <th
-                      key={header.id}
-                      className="border-b border-blue-gray-100 bg-blue-gray-50 p-4"
-                    >
-                      <Typography
-                        variant="small"
-                        color="blue-gray"
-                        className="font-bold leading-none"
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-max table-auto text-left">
+              <thead>
+                {table.getHeaderGroups().map((headerGroup) => (
+                  <tr key={headerGroup.id}>
+                    {headerGroup.headers.map((header) => (
+                      <th
+                        key={header.id}
+                        className="border-b border-blue-gray-100 bg-blue-gray-50 p-4"
+                      >
+                        <Typography
+                          variant="small"
+                          color="blue-gray"
+                          className="font-bold leading-none"
+                        >
+                          {flexRender(
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
+                        </Typography>
+                      </th>
+                    ))}
+                  </tr>
+                ))}
+              </thead>
+              <tbody>
+                {table.getRowModel().rows.map((row, index) => (
+                  <tr
+                    key={row.id}
+                    className={index % 2 === 0 ? "bg-blue-gray-50/50" : ""}
+                  >
+                    {row.getVisibleCells().map((cell) => (
+                      <td
+                        key={cell.id}
+                        className="p-4 border-b border-blue-gray-50"
                       >
                         {flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
+                          cell.column.columnDef.cell,
+                          cell.getContext()
                         )}
-                      </Typography>
-                    </th>
-                  ))}
-                </tr>
-              ))}
-            </thead>
-            <tbody>
-              {table.getRowModel().rows.map((row, index) => (
-                <tr
-                  key={row.id}
-                  className={index % 2 === 0 ? "bg-blue-gray-50/50" : ""}
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <td
-                      key={cell.id}
-                      className="p-4 border-b border-blue-gray-50"
-                    >
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
-                    </td>
-                  ))}
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-
-        {pets.length > 10 && (
-          <div className="flex items-center justify-between gap-4 mt-4">
-            <Button
-              variant="text"
-              className="flex items-center gap-2"
-              onClick={() => table.previousPage()}
-              disabled={!table.getCanPreviousPage()}
-            >
-              Previous
-            </Button>
-            <div className="flex items-center gap-2">
-              <Typography color="gray" className="font-normal">
-                Page {table.getState().pagination.pageIndex + 1} of{" "}
-                {table.getPageCount()}
-              </Typography>
-            </div>
-            <Button
-              variant="text"
-              className="flex items-center gap-2"
-              onClick={() => table.nextPage()}
-              disabled={!table.getCanNextPage()}
-            >
-              Next
-            </Button>
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
-        )}
-      </CardBody>
-    </Card>
+
+          {pets.length > 10 && (
+            <div className="flex items-center justify-between gap-4 mt-4">
+              <Button
+                variant="text"
+                className="flex items-center gap-2"
+                onClick={() => table.previousPage()}
+                disabled={!table.getCanPreviousPage()}
+              >
+                Previous
+              </Button>
+              <div className="flex items-center gap-2">
+                <Typography color="gray" className="font-normal">
+                  Page {table.getState().pagination.pageIndex + 1} of{" "}
+                  {table.getPageCount()}
+                </Typography>
+              </div>
+              <Button
+                variant="text"
+                className="flex items-center gap-2"
+                onClick={() => table.nextPage()}
+                disabled={!table.getCanNextPage()}
+              >
+                Next
+              </Button>
+            </div>
+          )}
+        </CardBody>
+      </Card>
+    </>
   );
 };
 

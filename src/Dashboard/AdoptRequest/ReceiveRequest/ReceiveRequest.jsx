@@ -1,7 +1,7 @@
-/* eslint-disable no-unused-vars */
 import { Button, Card, CardBody, Typography } from "@material-tailwind/react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useContext } from "react";
+import { useContext, useState } from "react";
+import { Helmet } from "react-helmet-async";
 import Swal from "sweetalert2";
 import TableSkeleton from "../../../Common/TaboleSkeleton/TableSkeleton";
 import { AuthContext } from "../../../Context/Auth/AuthProvider";
@@ -22,6 +22,9 @@ const ReceiveRequest = () => {
   const { user } = useContext(AuthContext);
   const axiosSecure = useAxiosSecure();
   const queryClient = useQueryClient();
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
   const {
     data: adoptions = [],
@@ -53,12 +56,9 @@ const ReceiveRequest = () => {
   });
 
   const handleAction = (adoptionId, status, petId) => {
-    const actionMessage =
-      status === "accepted" ? "Accept this request?" : "Reject this request?";
-
     Swal.fire({
       title: `Are you sure you want to ${status}?`,
-      text: `You won't be able to undo this!`,
+      text: "You won't be able to undo this!",
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#3085d6",
@@ -105,6 +105,18 @@ const ReceiveRequest = () => {
     });
   };
 
+  const totalPages = Math.ceil(adoptions.length / itemsPerPage);
+  const paginatedData = adoptions.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  const handlePageChange = (page) => {
+    if (page >= 1 && page <= totalPages) {
+      setCurrentPage(page);
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="container mx-auto px-4 py-8">
@@ -126,13 +138,18 @@ const ReceiveRequest = () => {
   if (!adoptions.length) {
     return (
       <div className="container mx-auto mt-20">
-        <Typography variant="h6" className="text-center">No Information found.</Typography>
+        <Typography variant="h6" className="text-center">
+          No Information found.
+        </Typography>
       </div>
     );
   }
 
   return (
     <div className="container mx-auto px-4 py-8">
+      <Helmet>
+        <title>Requests - Receive</title>
+      </Helmet>
       <Card className="h-full w-full">
         <CardBody>
           <Typography variant="h5" color="blue-gray" className="mb-6">
@@ -159,7 +176,7 @@ const ReceiveRequest = () => {
                 </tr>
               </thead>
               <tbody>
-                {adoptions.map((adoption) => (
+                {paginatedData.map((adoption) => (
                   <tr key={adoption._id} className="even:bg-blue-gray-50/50">
                     <td className="p-4">
                       <Typography variant="small" color="blue-gray">
@@ -173,7 +190,6 @@ const ReceiveRequest = () => {
                         alt=""
                       />
                     </td>
-
                     <td className="p-4">
                       <Typography variant="small" color="blue-gray">
                         {adoption.adopterName}
@@ -196,16 +212,13 @@ const ReceiveRequest = () => {
                     </td>
                     <td className="p-4">
                       <div
-                        className={`
-                        px-2 py-1 rounded-full text-xs font-semibold inline-block capitalize
-                        ${
+                        className={`px-2 py-1 rounded-full text-xs font-semibold inline-block capitalize ${
                           adoption.status === "accepted"
                             ? "bg-green-100 text-green-800"
                             : adoption.status === "rejected"
                             ? "bg-red-100 text-red-800"
                             : "bg-blue-100 text-blue-800"
-                        }
-                      `}
+                        }`}
                       >
                         {adoption.status}
                       </div>
@@ -247,6 +260,30 @@ const ReceiveRequest = () => {
               </tbody>
             </table>
           </div>
+
+          {adoptions.length > itemsPerPage && (
+            <div className="mt-4 flex justify-between items-center">
+              <Button
+                size="sm"
+                color="gray"
+                disabled={currentPage === 1}
+                onClick={() => handlePageChange(currentPage - 1)}
+              >
+                Previous
+              </Button>
+              <Typography>
+                Page {currentPage} of {totalPages}
+              </Typography>
+              <Button
+                size="sm"
+                color="gray"
+                disabled={currentPage === totalPages}
+                onClick={() => handlePageChange(currentPage + 1)}
+              >
+                Next
+              </Button>
+            </div>
+          )}
         </CardBody>
       </Card>
     </div>

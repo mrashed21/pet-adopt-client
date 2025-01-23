@@ -1,6 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import  { useContext } from "react";
+import { useContext } from "react";
+import { Helmet } from "react-helmet-async";
 import Swal from "sweetalert2";
+import TableSkeleton from "../../../Common/TaboleSkeleton/TableSkeleton";
 import { AuthContext } from "../../../Context/Auth/AuthProvider";
 import useAxiosSecure from "../../../Hooks/UseAxiosSecure/useAxiosSecure";
 
@@ -56,9 +58,7 @@ const MyDonations = () => {
   };
 
   if (isLoading) {
-    return (
-      <p className="text-lg font-medium text-gray-700">Loading donations...</p>
-    );
+    return <TableSkeleton />;
   }
 
   if (isError) {
@@ -71,6 +71,9 @@ const MyDonations = () => {
 
   return (
     <div className="p-4">
+      <Helmet>
+        <title>My - Donations</title>
+      </Helmet>
       <div className="bg-white rounded-lg shadow">
         <div className="px-6 py-4 border-b border-gray-200">
           <h2 className="text-xl font-semibold text-gray-800">My Donations</h2>

@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 
 const PetCard = ({ pet }) => {
   return (
-    <div className="border rounded-md shadow-md p-4">
+    <div className="border rounded-md shadow-md p-4 bg-[#EEEEEE] dark:bg-[#303030] dark:text-gray-200">
       <img src={pet.imageUrl} alt={pet.name} className="w-full h-40 object-cover rounded-md" />
       <h2 className="text-lg font-bold mt-2">{pet.name}</h2>
       <p>Age: {pet.age}</p>

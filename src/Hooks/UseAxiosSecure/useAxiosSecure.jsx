@@ -1,7 +1,6 @@
 import axios from "axios";
-import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-// import { AuthContext } from "../../Context/Auth/AuthProvider";
+import { useContext, useEffect } from "react";
+import { AuthContext } from "../../Context/Auth/AuthProvider";
 
 const axiosSecure = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
@@ -9,9 +8,9 @@ const axiosSecure = axios.create({
 });
 
 const useAxiosSecure = () => {
-  const navigate = useNavigate();
-  // const { logOut } = useContext(AuthContext);
-  // console.log(logOut);
+  // const navigate = useNavigate();
+  const { logout } = useContext(AuthContext);
+
   useEffect(() => {
     //
     axiosSecure.interceptors.request.use(
@@ -33,14 +32,15 @@ const useAxiosSecure = () => {
         // console.log("Error caught from axios interceptor-->", error.response);
         if (error.response?.status === 401 || error.response?.status === 403) {
           // logout
-          // logOut();
+          // logOut.logOut();
+          logout();
           // navigate to login
-          navigate("/login");
+          // navigate("/login");
         }
         return Promise.reject(error);
       }
     );
-  }, [ navigate]);
+  }, [logout]);
   return axiosSecure;
 };
 export default useAxiosSecure;

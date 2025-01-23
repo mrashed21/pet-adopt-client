@@ -17,6 +17,7 @@ import {
 import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { useContext, useState } from "react";
+import { Helmet } from "react-helmet-async";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import { useNavigate, useParams } from "react-router-dom";
@@ -25,11 +26,11 @@ import { AuthContext } from "../../../Context/Auth/AuthProvider";
 import useAxiosSecure from "../../../Hooks/UseAxiosSecure/useAxiosSecure";
 
 const PetDetailsSkeleton = () => (
-  <Card className="max-w-4xl mx-auto overflow-hidden animate-pulse">
+  <Card className="max-w-4xl mx-auto overflow-hidden animate-pulse ">
     <div className="h-96 relative">
       <Skeleton height="100%" />
     </div>
-    <CardBody className="p-6">
+    <CardBody className="p-6 ">
       <div className="flex justify-between items-start mb-6">
         <div className="w-2/3">
           <Skeleton height={40} width="80%" className="mb-2" />
@@ -178,8 +179,11 @@ const PetDetails = () => {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <Card className="max-w-4xl mx-auto overflow-hidden">
+    <div className="container mx-auto px-4 py-8 ">
+      <Helmet>
+        <title>Pet Details</title>
+      </Helmet>
+      <Card className="max-w-4xl mx-auto overflow-hidden dark:bg-[#303030] ">
         <CardHeader floated={false} className="relative h-96">
           <img
             src={pet.imageUrl}
@@ -190,7 +194,11 @@ const PetDetails = () => {
         <CardBody className="p-6">
           <div className="flex justify-between items-center mb-6">
             <div>
-              <Typography variant="h3" color="blue-gray" className="mb-2">
+              <Typography
+                variant="h3"
+                color="blue-gray"
+                className="mb-2 dark:text-gray-200"
+              >
                 {pet.name}{" "}
                 <Typography
                   as="span"
@@ -207,14 +215,7 @@ const PetDetails = () => {
                 className="capitalize w-fit"
               />
             </div>
-            {/* <Button
-              onClick={() => setShowModal(true)}
-              disabled={pet.adopted}
-              color={pet.adopted ? "gray" : "blue"}
-              size="lg"
-            >
-              {pet.adopted ? "Pending" : "Adopt Now"}
-            </Button> */}
+
             <Button
               onClick={() => {
                 if (user) {
@@ -233,57 +234,100 @@ const PetDetails = () => {
 
           <div className="grid md:grid-cols-3 gap-6 mb-6">
             <div>
-              <Typography variant="h6" color="blue-gray" className="mb-1">
+              <Typography
+                variant="h6"
+                color="blue-gray"
+                className="mb-1 dark:text-gray-200"
+              >
                 Age
               </Typography>
-              <Typography color="gray">{pet.age} years</Typography>
+              <Typography color="gray" className="dark:text-gray-200">
+                {pet.age} Month
+              </Typography>
             </div>
             <div>
-              <Typography variant="h6" color="blue-gray" className="mb-1">
+              <Typography
+                variant="h6"
+                color="blue-gray"
+                className="mb-1 dark:text-gray-200"
+              >
                 Location
               </Typography>
-              <Typography color="gray">{pet.location}</Typography>
+              <Typography color="gray" className="dark:text-gray-200">
+                {pet.location}
+              </Typography>
             </div>
             <div>
-              <Typography variant="h6" color="blue-gray" className="mb-1">
+              <Typography
+                variant="h6"
+                color="blue-gray"
+                className="mb-1 dark:text-gray-200"
+              >
                 Category
               </Typography>
-              <Typography color="gray" className="capitalize">
+              <Typography
+                color="gray"
+                className="capitalize dark:text-gray-200"
+              >
                 {pet.category}
               </Typography>
             </div>
           </div>
 
-          <Typography variant="h6" color="blue-gray" className="mb-2">
+          <Typography
+            variant="h6"
+            color="blue-gray"
+            className="mb-2 dark:text-gray-200"
+          >
             Description
           </Typography>
           <Typography
             color="gray"
-            className="whitespace-pre-line"
+            className="whitespace-pre-line dark:text-gray-200"
             dangerouslySetInnerHTML={{ __html: pet.shortDescription }}
           />
 
-          <Typography variant="h6" color="blue-gray" className="my-2">
+          <Typography
+            variant="h6"
+            color="blue-gray"
+            className="my-2 dark:text-gray-200"
+          >
             Details
           </Typography>
           <Typography
             color="gray"
-            className="whitespace-pre-line"
+            className="whitespace-pre-line dark:text-gray-200"
             dangerouslySetInnerHTML={{ __html: pet.longDescription }}
           />
         </CardBody>
       </Card>
 
-      <Dialog open={showModal} handler={() => setShowModal(false)} size="md">
+      <Dialog
+        open={showModal}
+        handler={() => setShowModal(false)}
+        size="md"
+        rk
+        className="dark:bg-[#292933]"
+      >
         <form onSubmit={handleAdopt}>
-          <DialogHeader>Adopt {pet.name}</DialogHeader>
+          <DialogHeader className="dark:text-gray-200">
+            Adopt {pet.name}
+          </DialogHeader>
           <DialogBody divider className="overflow-y-auto max-h-[60vh]">
             <div className="space-y-4">
-              <Card className="p-4 bg-blue-gray-50">
-                <Typography variant="small" color="gray" className="mb-2">
+              <Card className="p-4 bg-blue-gray-50 dark:bg-gray-800">
+                <Typography
+                  variant="small"
+                  color="gray"
+                  className="mb-2 dark:text-gray-200"
+                >
                   Pet ID: {pet._id}
                 </Typography>
-                <Typography variant="small" color="gray">
+                <Typography
+                  variant="small"
+                  color="gray"
+                  className="dark:text-gray-200"
+                >
                   Pet Name: {pet.name}
                 </Typography>
               </Card>
@@ -303,12 +347,19 @@ const PetDetails = () => {
               />
               <Input
                 type="tel"
-                label="Phone Number"
+                label={<span className="dark:text-white">Phone Number</span>}
                 name="phoneNumber"
                 required
-                containerProps={{ className: "mb-4" }}
+                className="dark:text-gray-200"
+                // containerProps={{ className: "mb-4" }}
               />
-              <Textarea label="Address" name="address" required rows={3} />
+              <Textarea
+                label={<span className="dark:text-white">Address</span>}
+                name="address"
+                required
+                rows={3}
+                className="dark:text-white"
+              />
             </div>
           </DialogBody>
           <DialogFooter className="space-x-4">
@@ -316,6 +367,7 @@ const PetDetails = () => {
               variant="outlined"
               onClick={() => setShowModal(false)}
               disabled={loading}
+              className="dark:text-black dark:bg-white"
             >
               Cancel
             </Button>

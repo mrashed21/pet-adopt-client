@@ -1,5 +1,6 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
 import React from "react";
+import { Helmet } from "react-helmet-async";
 import SkeletonCard from "../../../Common/Skeleton/SkeletonCard";
 import useAxiosSecure from "../../../Hooks/UseAxiosSecure/useAxiosSecure";
 import DonationCard from "../DonationCard/DonationCard";
@@ -64,7 +65,10 @@ const DonationPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 p-6">
+    <div className="min-h-screen  p-6">
+      <Helmet>
+        <title>Donations</title>
+      </Helmet>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {data.pages.map((page, pageIndex) =>
           page.donations.map((donation, index) => {
@@ -80,8 +84,8 @@ const DonationPage = () => {
         )}
       </div>
       {isFetchingNextPage && (
-        <div className="text-center mt-4">
-          {Array(3)
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
+          {Array(6)
             .fill(0)
             .map((_, index) => (
               <SkeletonCard key={index} />
