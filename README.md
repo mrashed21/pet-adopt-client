@@ -60,7 +60,7 @@ This project aims to create a user-friendly and dynamic platform for pet adoptio
 - Responsive design for mobile, tablet, and desktop.
 - Dark and light mode toggle.
 - Skeleton loaders instead of spinners for a better user experience.
-- UI design implemented using `shadcn-ui` for a polished and modern look.
+- UI design implemented using `Material Tailwind` for a polished and modern look.
 
 ## Deployment
 
@@ -87,7 +87,7 @@ This project aims to create a user-friendly and dynamic platform for pet adoptio
 - `react-toastify` - Toast notifications.
 - `stripe` & `@stripe/react-stripe-js` - Payment gateway integration.
 
-## How to Access
+## How to Access Admin Dashboard
 
 - **Admin Credentials:**
   - Email: [admin@admin.admin]
