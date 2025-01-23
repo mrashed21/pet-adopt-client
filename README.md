@@ -53,7 +53,7 @@ This project aims to create a user-friendly and dynamic platform for pet adoptio
 ### Admin Dashboard
 
 - Manage users, pets, and donation campaigns.
-- Ban users, edit/delete pets, and pause/unpause donation campaigns.
+- UserRole Handle Edit/Delete pets, and pause/unpause donation campaigns.
 
 ### Design & UX
 
