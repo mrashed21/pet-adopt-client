@@ -92,4 +92,4 @@ This project aims to create a user-friendly and dynamic platform for pet adoptio
 - **Admin Credentials:**
   - Email: [admin@admin.admin]
   - Password: [Admin1$]
-- **Server Code:** [Visit Here](https://github.com/Programming-Hero-Web-Course4/b10a12-server-side-mrashed21)
+- **Server Code:** [Visit Here](https://github.com/mrashed21/pet-adopt-server)
