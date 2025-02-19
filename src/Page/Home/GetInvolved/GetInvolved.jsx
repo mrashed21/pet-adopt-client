@@ -3,7 +3,8 @@ import AOS from "aos";
 import "aos/dist/aos.css";
 import { motion } from "framer-motion";
 import { useEffect } from "react";
-
+import { Link } from "react-router-dom";
+import { Link as ScrollLink } from "react-scroll";
 const GetInvolved = () => {
   useEffect(() => {
     AOS.init({ duration: 800 });
@@ -41,9 +42,11 @@ const GetInvolved = () => {
               Your donations help us provide food, shelter, and medical care for
               rescued pets.
             </Typography>
-            <Button color="blue" size="lg" className="mt-4">
-              Donate Now
-            </Button>
+            <Link to="/donation">
+              <Button color="blue" size="lg" className="mt-4">
+                Donate Now
+              </Button>
+            </Link>
           </motion.div>
           <motion.div
             whileHover={{ scale: 1.05 }}
@@ -55,12 +58,19 @@ const GetInvolved = () => {
               Volunteer
             </Typography>
             <Typography className="mt-2 text-gray-600 dark:text-gray-300">
-              Join our team and make a difference in the lives of pets waiting
-              for homes.
+              Join our amazing team and truly make a lasting difference in the
+              lives of pets patiently waiting for loving homes.
             </Typography>
-            <Button color="green" size="lg" className="mt-4">
-              Join Us
-            </Button>
+            <ScrollLink to="join-us" smooth={true} duration={500}>
+              <Button color="blue" size="lg" className="mt-4">
+                Join Us
+              </Button>
+            </ScrollLink>
+            {/* <Link to="#join-us">
+              <Button color="green" size="lg" className="mt-4">
+                Join Us
+              </Button>
+            </Link> */}
           </motion.div>
           <motion.div
             whileHover={{ scale: 1.05 }}
@@ -75,9 +85,14 @@ const GetInvolved = () => {
               Provide temporary care for pets in need and help them transition
               to their new homes.
             </Typography>
-            <Button color="red" size="lg" className="mt-4">
+            <ScrollLink to="join-us" smooth={true} duration={500}>
+              <Button color="blue" size="lg" className="mt-4">
               Become a Foster
-            </Button>
+              </Button>
+            </ScrollLink>
+            {/* <Button color="red" size="lg" className="mt-4">
+              Become a Foster
+            </Button> */}
           </motion.div>
         </div>
       </div>

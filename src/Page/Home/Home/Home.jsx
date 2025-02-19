@@ -3,6 +3,7 @@ import About from "../About/About";
 import Banner from "../Banner/Banner";
 import CallToAction from "../CallToAction/CallToAction";
 import GetInvolved from "../GetInvolved/GetInvolved";
+import Newsletter from "../Newsletter/Newsletter";
 import PetsCategory from "../PetsCategory/PetsCategory";
 import RecentCompain from "../RecentCompain/RecentCompain";
 import SuccessStories from "../SuccessStories/SuccessStories";
@@ -19,7 +20,9 @@ const Home = () => {
       <CallToAction />
       <About />
       <SuccessStories />
-      <GetInvolved />{" "}
+      <GetInvolved />
+
+      <Newsletter />
     </div>
   );
 };
