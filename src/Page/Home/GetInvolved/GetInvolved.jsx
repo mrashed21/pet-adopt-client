@@ -66,11 +66,6 @@ const GetInvolved = () => {
                 Join Us
               </Button>
             </ScrollLink>
-            {/* <Link to="#join-us">
-              <Button color="green" size="lg" className="mt-4">
-                Join Us
-              </Button>
-            </Link> */}
           </motion.div>
           <motion.div
             whileHover={{ scale: 1.05 }}
@@ -90,9 +85,6 @@ const GetInvolved = () => {
               Become a Foster
               </Button>
             </ScrollLink>
-            {/* <Button color="red" size="lg" className="mt-4">
-              Become a Foster
-            </Button> */}
           </motion.div>
         </div>
       </div>
